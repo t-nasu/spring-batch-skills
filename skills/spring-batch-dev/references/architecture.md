@@ -47,8 +47,15 @@ batch → application → domain ← infrastructure
 
 ## chunk の Reader とリポジトリ
 
-読み取り専用の大量処理に限り、Reader がリポジトリを経由せず Mapper を直接使ってよい（`MyBatisCursorItemReader` など）。その場合は次を守る。
+大量件数を読む chunk の Reader の作り方は、ジョブごとに開発者が選ぶ。設計図の段で次の二案を示し、承認のときに選んでもらう。
 
-- 更新は必ずリポジトリを経由する
+| 案 | 作り方 | 向く場合 |
+|---|---|---|
+| A. Mapper を直接使う | `MyBatisCursorItemReader` などで Mapper から読む | 件数が多く、速さとメモリの一定さが要る |
+| B. リポジトリを経由する | domain のリポジトリにページ単位で読むメソッドを設け、それを呼ぶ Reader を作る | 層の決まりを崩したくない |
+
+A を選んだ場合は次を守る。
+
+- 読み取り専用に限る。更新は必ずリポジトリを経由する
 - Reader は infrastructure に置き、Mapper が返す DTO からドメインオブジェクトへの変換も Reader の中で行う。Processor には常にドメインオブジェクトが渡る
 - 処理対象を絞る条件は SQL に書き、その意味を Reader のクラスコメントに業務の言葉で書く

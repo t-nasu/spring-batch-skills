@@ -13,6 +13,7 @@
 - 判断結果（Batch / 素の Boot）とその根拠（仕様のどの項目による判断か）
 - 処理の流れ図（Mermaid の `flowchart`）
 - 各ステップの表: 名前、種類（chunk / tasklet）、chunk なら件数、Reader / Processor / Writer の各クラス名と層、スキップ・リトライの方針
+- chunk の Reader があれば、その作り方の二案（[architecture.md](architecture.md) の「chunk の Reader とリポジトリ」）と推す案。どちらにするかを利用者に選んでもらう
 - 使うクラスの一覧（層ごと）
 
 ## 図の描き方の決まり

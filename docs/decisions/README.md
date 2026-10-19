@@ -6,9 +6,10 @@
 |---|---|---|
 | [0001](0001-skill-scope.md) | スキルはチーム固有の決まりだけを扱う | 2026-10-19 |
 | [0002](0002-batch-vs-boot.md) | 迷ったら素の Spring Boot、Batch は条件に当てはまる時のみ | 2026-10-19 |
-| [0003](0003-chunk-reader-mapper.md) | chunk の Reader は条件付きで Mapper を直接使ってよい | 2026-10-19 |
+| [0003](0003-chunk-reader-mapper.md) | chunk の Reader の作り方は開発者が選ぶ | 2026-10-19 |
 | [0004](0004-naming-and-sql.md) | `UseCase` の命名、SQL は XML、最上位パッケージは `batch` | 2026-10-19 |
 | [0005](0005-versions.md) | 版はスキル内の表で指定し、社内のリポジトリは使わない | 2026-10-19 |
+| [0006](0006-in-house-skills.md) | 社内スキルは名で示して従わせ、`UseCase` の命名などは本スキルを優先 | 2026-10-19 |
 
 ## 未決
 

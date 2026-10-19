@@ -14,8 +14,25 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 1. **仕様を受け取る。** 利用者からバッチ処理仕様書（書式は [references/batch-spec-template.md](references/batch-spec-template.md)）を受け取る。仕様書が無ければ、この書式を示して埋めてもらう。★ 項目の不足だけを、まとめて一度に質問する。
 2. **Batch か素の Boot かを決める。** [references/batch-vs-boot.md](references/batch-vs-boot.md) の条件に照らして決め、根拠（仕様のどの項目によるか）を一行で示す。迷ったら素の Spring Boot とする。
 3. **設計図を書く。** [references/design-diagram.md](references/design-diagram.md) に従い、Mermaid の流れ図とステップ表を `docs/batch-specs/<ジョブ名>.design.md` に書く。利用者に見せて承認を待つ。
-4. **実装する。** 層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。
+4. **実装する。** 下の「社内スキルとの関係」に従って社内スキルを使う。社内スキルで定まらない点の層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。
 5. **確かめる。** `./gradlew build` が通ること、設計図とコードが食い違っていないことを確かめ、食い違いがあれば設計図かコードを直す。
+
+## 社内スキルとの関係
+
+次の社内スキルが入っていれば、該当する作業ではそのスキルの手順と決まりに従う。
+
+- ドメイン: `add-aggregate`, `add-domain-model`, `add-value-object`, `add-domain-service`, `add-exception`
+- アプリケーション: `add-usecase`
+- インフラストラクチャ: `add-repository`, `add-mybatis-mapper`, `add-outboud-kafka-producer`, `add-outbound-s3-client`
+- 実装後の点検: `review-layerd-ddd`, `review-dependency`, `review-class-design`, `review-naming`, `review-sql`
+
+ただし次の点は、社内スキルと食い違っても本スキルに従う。
+
+- `add-inbound-batch` は使わない。バッチの入口は本スキルの決まりで作る
+- application 層のクラスは `〇〇UseCase` と名付ける。社内スキルが `Service` と書いていても `UseCase` と読み替える
+- chunk の Reader の作り方は、[references/architecture.md](references/architecture.md) の二案から開発者が選んだものに従う
+
+社内スキルが入っていなければ、本スキルの参照資料だけで進める。
 
 ## 必ず守ること（要約）
 
