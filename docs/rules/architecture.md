@@ -1,6 +1,6 @@
 # バッチアプリケーションの層構成（レイヤード + DDD）
 
-> 状態: 草案。「chunk の Reader とリポジトリ」をチームで決めてから確定する。
+> 状態: 確定（2026-10-19）。
 
 ## パッケージ構成
 
@@ -46,7 +46,7 @@ batch → application → domain ← infrastructure
 - リポジトリ: domain に `〇〇Repository`、infrastructure に `MyBatis〇〇Repository`
 - Mapper: `〇〇Mapper`
 
-## chunk の Reader とリポジトリ（未決）
+## chunk の Reader とリポジトリ
 
 大量件数の chunk 処理で、Reader がリポジトリを経由せず Mapper を直接使うことを許すか。
 
@@ -73,7 +73,7 @@ batch → application → domain ← infrastructure
 - 再起動時の読み取り位置を自前で保存する Reader を書く必要がある（公式 Reader の機能が使えない）
 - OFFSET によるページングは件数が多いと遅く、処理中にデータが変わると取りこぼしや重複が起こりうる（キー値で区切るページングで緩和できるが、その分の実装が要る）
 
-### 草案の推し
+### 決定
 
 **条件付きで許す。** 次の歯止めを付ける。
 - 読み取り専用の大量処理に限る（更新は必ずリポジトリ経由）
