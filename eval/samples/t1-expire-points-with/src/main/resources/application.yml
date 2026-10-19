@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: expire-points-batch
+  main:
+    web-application-type: none
+    banner-mode: off
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/point?useSSL=false&serverTimezone=Asia/Tokyo&rewriteBatchedStatements=true}
+    username: ${DB_USER:point}
+    password: ${DB_PASSWORD:point}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 2
+      auto-commit: false
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 1800
+
+logging:
+  level:
+    root: INFO
+    com.example.expirepoints: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"

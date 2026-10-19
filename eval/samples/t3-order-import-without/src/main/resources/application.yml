@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: order-import-batch
+
+  # バッチなので Web サーバは起動しない。
+  main:
+    web-application-type: none
+    banner-mode: "off"
+
+  batch:
+    job:
+      # 既定のランナーは無効化し、presentation.runner.OrderImportJobRunner が起動する。
+      # 二重起動ロックをジョブ開始前に獲得し、失敗の種類を終了コードに反映させるため。
+      enabled: false
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/order_import?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Tokyo}
+    username: ${DB_USER:order_import}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      # 単一スレッドのバッチなので接続は少数でよい。ジョブ本体・ロック用の
+      # 独立トランザクション・Spring Batch のメタデータ更新で同時に数本使う。
+      maximum-pool-size: 5
+      pool-name: order-import-pool
+
+  # スキーマは運用手順で適用する（src/main/resources/db/mysql 配下）。
+  # バッチが起動のたびに DDL を流すことはない。
+  sql:
+    init:
+      mode: never
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    # 想定より多く/少なく列が返ったことに気づけるようにする。
+    auto-mapping-unknown-column-behavior: WARNING
+    default-statement-timeout: 300
+
+batch:
+  order-import:
+    # 1 トランザクションで登録する件数。再開時はこの単位まで巻き戻る。
+    chunk-size: 1000
+    # 読み飛ばせる不正データの上限。超えるとジョブは異常終了する。
+    skip-limit: 100
+    encoding: UTF-8
+    ordered-at-format: "yyyy-MM-dd HH:mm:ss"
+    # これを超えた二重起動防止ロックは異常終了の残骸とみなして引き継ぐ。
+    # 起動 4:00・期限 7:00 という運用に対して十分長く、翌日までには必ず切れる長さ。
+    lock-stale-after: PT6H
+
+logging:
+  level:
+    root: INFO
+    com.example.orderimport: INFO
+    # 読み飛ばした行の明細は WARN で出る。
+    com.example.orderimport.presentation.listener.SkippedOrderLineListener: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{40} - %msg%n"

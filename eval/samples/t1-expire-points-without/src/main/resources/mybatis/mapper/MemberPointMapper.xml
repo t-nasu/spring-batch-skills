@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.pointbatch.infrastructure.datasource.mybatis.mapper.MemberPointMapper">
+
+    <resultMap id="memberPointRecord"
+               type="com.example.pointbatch.infrastructure.datasource.mybatis.record.MemberPointRecord">
+        <id property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="amount" column="amount"/>
+        <result property="status" column="status"/>
+        <result property="expiresOn" column="expires_on"/>
+    </resultMap>
+
+    <!--
+      失効対象の抽出。
+      ID によるキーセットページングで分割取得するため、ORDER BY id は必須。
+      想定件数は通常 2,000 / 最大 20,000 件。
+    -->
+    <select id="selectExpirationTargets" resultMap="memberPointRecord">
+        SELECT
+            id,
+            member_id,
+            amount,
+            status,
+            expires_on
+        FROM
+            member_point
+        WHERE
+            status = 'ACTIVE'
+            AND expires_on &lt; #{targetDate}
+            <if test="exclusiveStartId != null">
+            AND id &gt; #{exclusiveStartId}
+            </if>
+        ORDER BY
+            id
+        LIMIT #{limit}
+    </select>
+
+    <!--
+      有効なものだけを失効済みに更新する。
+      status = 'ACTIVE' を条件に含めることで、読み取り後に他処理が変更した行を更新しない。
+      呼び出し側は更新件数が ids の件数と一致することを検証する。
+    -->
+    <update id="updateToExpired">
+        UPDATE
+            member_point
+        SET
+            status = 'EXPIRED',
+            updated_at = CURRENT_TIMESTAMP
+        WHERE
+            status = 'ACTIVE'
+            AND id IN
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </update>
+
+</mapper>

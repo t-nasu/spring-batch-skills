@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.orderimport.infrastructure.datasource.mapper.OrderMapper">
+
+    <!--
+      集計結果はレコードのコンストラクタで受ける。列と引数の対応をここに明示して
+      おくことで、列の追加や並び替えで黙って壊れることがない。
+      aggregatedAt は集計時点では未確定なので null を渡す。
+    -->
+    <resultMap id="dailySalesRowMap"
+               type="com.example.orderimport.infrastructure.datasource.dto.DailySalesRow">
+        <constructor>
+            <idArg column="business_date"  javaType="java.time.LocalDate"/>
+            <idArg column="product_code"   javaType="java.lang.String"/>
+            <arg   column="order_count"    javaType="_int"/>
+            <arg   column="total_quantity" javaType="_long"/>
+            <arg   column="total_amount"   javaType="java.math.BigDecimal"/>
+            <arg   column="aggregated_at"  javaType="java.time.LocalDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="insertAll">
+        INSERT INTO orders (
+            order_number, business_date, customer_code, product_code,
+            quantity, unit_price, amount, ordered_at, created_at
+        ) VALUES
+        <foreach collection="orders" item="order" separator=",">
+            (#{order.orderNumber}, #{order.businessDate}, #{order.customerCode}, #{order.productCode},
+             #{order.quantity}, #{order.unitPrice}, #{order.amount}, #{order.orderedAt}, #{order.createdAt})
+        </foreach>
+    </insert>
+
+    <!--
+      30 万件を Java 側に読み出して畳むのは現実的でないため、集計は SQL に任せて
+      商品単位に畳んだあとの行だけを返す。
+      SELECT 句に NULL AS aggregated_at を置いているのは resultMap の
+      コンストラクタ引数を埋めるため。
+    -->
+    <select id="aggregateDailySales" resultMap="dailySalesRowMap">
+        SELECT
+            business_date,
+            product_code,
+            COUNT(*)       AS order_count,
+            SUM(quantity)  AS total_quantity,
+            SUM(amount)    AS total_amount,
+            NULL           AS aggregated_at
+        FROM orders
+        WHERE business_date = #{businessDate}
+        GROUP BY business_date, product_code
+        ORDER BY product_code
+    </select>
+
+</mapper>

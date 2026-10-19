@@ -1,0 +1,6 @@
+plugins {
+    // Java 25 のツールチェインが手元に無いときに自動取得させる。
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'expire-points-batch'

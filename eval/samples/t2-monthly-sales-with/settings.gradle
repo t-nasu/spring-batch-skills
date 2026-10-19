@@ -1,0 +1,6 @@
+plugins {
+    // Java 25 のツールチェーンを自動で用意するための解決プラグイン
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'monthly-sales-batch'

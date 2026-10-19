@@ -1,0 +1,32 @@
+spring:
+  batch:
+    job:
+      # テストではジョブを明示的に起動するため、起動時の自動実行は無効にする
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:monthly-sales-batch;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        # テストクラスごとにアプリケーションコンテキストが作られるため、作り直せるように毎回 DROP する
+        - classpath:org/springframework/batch/core/schema-drop-h2.sql
+        - classpath:org/springframework/batch/core/schema-h2.sql
+        - classpath:db/h2/schema.sql
+
+batch:
+  monthly-sales:
+    # チャンクやページの境界をまたぐ挙動を確かめたいので、テストでは小さくする
+    chunk-size: 2
+    page-size: 3
+    skip-limit: 3
+    deadlock-retry-count: 2
+    retry-initial-interval: 1ms
+    retry-max-interval: 5ms
+
+logging:
+  level:
+    com.example.salesbatch: DEBUG

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salesbatch.infrastructure.mybatis.mapper.MonthlySalesSummaryMapper">
+
+  <!--
+    チャンク 1 回分をまとめて 1 文で登録する。
+    主キー (target_month, store_id, product_id) が重複した場合は上書きし、
+    手動での再実行や再開でも二重登録にならないようにする。
+
+    VALUES(列名) は MySQL 8.0.20 以降では非推奨（行エイリアス "AS new" が推奨）だが、
+    MySQL 5.7 / 8.x と H2(MySQL 互換モード) の双方で動く形としてこちらを採用している。
+  -->
+  <insert id="upsertAll">
+    INSERT INTO monthly_sales_summary (
+      target_month,
+      store_id,
+      product_id,
+      total_amount,
+      total_quantity,
+      transaction_count,
+      created_at,
+      updated_at
+    ) VALUES
+    <foreach collection="records" item="record" separator=",">
+      (
+        #{record.targetMonth},
+        #{record.storeId},
+        #{record.productId},
+        #{record.totalAmount},
+        #{record.totalQuantity},
+        #{record.transactionCount},
+        #{now},
+        #{now}
+      )
+    </foreach>
+    ON DUPLICATE KEY UPDATE
+      total_amount = VALUES(total_amount),
+      total_quantity = VALUES(total_quantity),
+      transaction_count = VALUES(transaction_count),
+      updated_at = VALUES(updated_at)
+  </insert>
+
+  <delete id="deleteByTargetMonth">
+    DELETE FROM monthly_sales_summary
+    WHERE target_month = #{targetMonth}
+  </delete>
+
+</mapper>

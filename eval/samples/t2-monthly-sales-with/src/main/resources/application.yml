@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: monthly-sales-batch
+  main:
+    web-application-type: none
+  datasource:
+    # useCursorFetch: 800 万件をサーバ側カーソルで少しずつ受け取り、メモリに載せ切らないようにする
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:sales}?useCursorFetch=true&rewriteBatchedStatements=true&characterEncoding=UTF-8
+    username: ${DB_USER:sales}
+    password: ${DB_PASSWORD:}
+    hikari:
+      # 読み出しカーソル用と書き込み用で同時に接続を使うため 2 本以上が要る
+      maximum-pool-size: 5
+  batch:
+    jdbc:
+      # Spring Batch の管理表は運用側で作成済みとする（DDL は spring-batch-core の中にある）
+      initialize-schema: never
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+batch:
+  monthly-sales:
+    chunk-size: 1000
+    skip-limit: 1000
+    deadlock-retry-limit: 3
+
+logging:
+  level:
+    root: INFO
+    com.example.monthlysales: INFO
+    # 飛ばした取引 ID はこのロガーから WARN で出る
+    com.example.monthlysales.batch.SkippedSalesTransactionLogger: WARN

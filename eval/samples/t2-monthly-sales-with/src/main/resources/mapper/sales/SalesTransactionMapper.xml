@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.monthlysales.infrastructure.sales.SalesTransactionMapper">
+
+    <resultMap id="salesTransactionRow"
+               type="com.example.monthlysales.infrastructure.sales.SalesTransactionRow">
+        <constructor>
+            <idArg column="transaction_id" javaType="java.lang.String"/>
+            <arg column="store_id" javaType="java.lang.String"/>
+            <arg column="product_id" javaType="java.lang.String"/>
+            <arg column="transaction_date" javaType="java.time.LocalDate"/>
+            <arg column="type" javaType="java.lang.String"/>
+            <arg column="amount" javaType="java.math.BigDecimal"/>
+            <arg column="quantity" javaType="java.lang.Long"/>
+        </constructor>
+    </resultMap>
+
+    <!--
+      対象年月の取引明細を 1 件ずつ読み出す。
+      並び順は索引 idx_sales_transaction_date (transaction_date, transaction_id) に沿わせてあり、
+      範囲走査のまま整列済みで読めるため、大量件数でも並べ替えが起きない。
+      この順序は毎回同じであることが再開の前提になる。
+    -->
+    <select id="selectByTransactionDateRange" resultMap="salesTransactionRow" fetchSize="1000">
+        SELECT
+            transaction_id,
+            store_id,
+            product_id,
+            transaction_date,
+            type,
+            amount,
+            quantity
+        FROM
+            sales_transaction
+        WHERE
+            transaction_date &gt;= #{fromDate}
+            AND transaction_date &lt; #{toDateExclusive}
+        ORDER BY
+            transaction_date,
+            transaction_id
+    </select>
+
+</mapper>

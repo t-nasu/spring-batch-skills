@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.orderimport.infrastructure.sales.DailySalesMapper">
+
+    <!-- 同じ業務日付で再実行しても結果が変わらないよう、あれば上書きする。 -->
+    <insert id="upsert" parameterType="com.example.orderimport.infrastructure.sales.DailySalesRecord">
+        INSERT INTO daily_sales (business_date, order_count, total_amount)
+        VALUES (#{businessDate}, #{orderCount}, #{totalAmount})
+        AS incoming
+        ON DUPLICATE KEY UPDATE
+            order_count  = incoming.order_count,
+            total_amount = incoming.total_amount
+    </insert>
+
+</mapper>

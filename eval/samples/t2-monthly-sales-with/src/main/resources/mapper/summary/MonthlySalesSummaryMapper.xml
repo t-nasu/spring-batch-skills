@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.monthlysales.infrastructure.summary.MonthlySalesSummaryMapper">
+
+    <!--
+      主キー (target_month, store_id, product_id) が既にあれば金額と数量を足し込む。
+      一定件数ごとのトランザクションで呼ばれるので、失敗した分はロールバックで取り消され、
+      再開したときに同じ取引が二度足し込まれることはない。
+    -->
+    <insert id="addAll">
+        INSERT INTO monthly_sales_summary (
+            target_month,
+            store_id,
+            product_id,
+            total_amount,
+            total_quantity
+        ) VALUES
+        <foreach collection="rows" item="row" separator=",">
+            (#{row.targetMonth}, #{row.storeId}, #{row.productId},
+             #{row.totalAmount}, #{row.totalQuantity})
+        </foreach>
+        AS added
+        ON DUPLICATE KEY UPDATE
+            total_amount = monthly_sales_summary.total_amount + added.total_amount,
+            total_quantity = monthly_sales_summary.total_quantity + added.total_quantity
+    </insert>
+
+</mapper>

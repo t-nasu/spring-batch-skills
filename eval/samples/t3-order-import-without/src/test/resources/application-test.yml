@@ -1,0 +1,32 @@
+# テスト用の上書き設定。
+# batch.order-import.* の既定値は本体の application.yml から引き継ぐ（＝本番と同じ値で検証する）。
+spring:
+  datasource:
+    # MySQL 互換モードで動かす。DDL は本番と同じ db/mysql/02-application-schema.sql を流す。
+    # DB 名は各テストクラスが @TestPropertySource で上書きし、相互に干渉しないようにする。
+    url: jdbc:h2:mem:orderimport;MODE=MySQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        # Spring Batch のメタデータ表。本番では db/mysql/01-spring-batch-metadata.sql を使う。
+        - classpath:org/springframework/batch/core/schema-h2.sql
+        - classpath:db/mysql/02-application-schema.sql
+      data-locations:
+        - classpath:db/test-master-data.sql
+
+batch:
+  order-import:
+    runner:
+      # テストではコンテキスト起動と同時にジョブが走らないようにする。
+      # ランナー自体は OrderImportJobRunnerTest が明示的に呼び出して検証する。
+      enabled: false
+
+logging:
+  level:
+    com.example.orderimport: DEBUG
+    org.springframework.batch: INFO

@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: order-import-batch
+  main:
+    # web サーバは起動しない
+    web-application-type: none
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/order_import?characterEncoding=UTF-8&serverTimezone=Asia/Tokyo}
+    username: ${DB_USER:order_import}
+    password: ${DB_PASSWORD:}
+    hikari:
+      # chunk を 1 本で流すため、接続は数本あれば足りる
+      maximum-pool-size: 4
+  batch:
+    jdbc:
+      # Batch のメタデータ表は運用で作る（db/schema-batch-mysql.sql を参照）
+      initialize-schema: never
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.example.orderimport: INFO

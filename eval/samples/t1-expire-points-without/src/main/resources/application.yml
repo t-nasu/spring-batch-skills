@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: point-batch
+  main:
+    banner-mode: "off"
+    web-application-type: none
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:point}?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Tokyo&rewriteBatchedStatements=true
+    username: ${DB_USER:point}
+    password: ${DB_PASSWORD:point}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      # 単一スレッドのバッチなのでコネクションは最小限でよい。
+      maximum-pool-size: 2
+      connection-timeout: 10000
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 60
+
+batch:
+  expire-points:
+    # 1 トランザクションで処理する件数。最大 20,000 件 / 20 コミットを想定。
+    chunk-size: 1000
+
+logging:
+  level:
+    root: INFO
+    com.example.pointbatch: INFO

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.orderimport.infrastructure.product.ProductMapper">
+
+    <select id="countByProductCode" resultType="int">
+        SELECT COUNT(*) FROM products WHERE product_code = #{productCode}
+    </select>
+
+</mapper>

@@ -1,0 +1,22 @@
+# ローカル検証用プロファイル（docker compose などで用意した MySQL に接続する想定）。
+#
+# Spring Boot 4 には Spring Batch のメタデータ表を自動生成する仕組みが無いため、
+# このプロファイルでは spring.sql.init で作成する。本番では DDL を事前に流しておくこと
+# （docs/monthly-sales-batch.md の「DB の準備」を参照）。
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/sales?characterEncoding=UTF-8&connectionTimeZone=Asia/Tokyo&rewriteBatchedStatements=true}
+    username: ${DB_USER:sales_batch}
+    password: ${DB_PASSWORD:sales_batch}
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+      schema-locations:
+        - classpath:org/springframework/batch/core/schema-mysql.sql
+        - classpath:db/mysql/schema.sql
+
+logging:
+  level:
+    com.example.salesbatch: DEBUG
+    org.springframework.batch: INFO

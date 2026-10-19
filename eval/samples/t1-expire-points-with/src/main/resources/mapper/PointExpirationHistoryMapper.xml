@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.expirepoints.infrastructure.PointExpirationHistoryMapper">
+
+    <insert id="insertAll">
+        INSERT INTO point_expiration_history (
+            member_point_id,
+            member_id,
+            points,
+            expired_on
+        ) VALUES
+        <foreach item="record" collection="records" separator=",">
+            (#{record.memberPointId}, #{record.memberId}, #{record.points}, #{record.expiredOn})
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: monthly-sales-batch
+  main:
+    banner-mode: "off"
+  batch:
+    job:
+      # 起動時に実行するジョブ。起動引数は `targetMonth=yyyyMM`（オプション引数の `--` は付けない）
+      name: monthlySalesSummaryJob
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/sales?characterEncoding=UTF-8&connectionTimeZone=Asia/Tokyo&rewriteBatchedStatements=true}
+    username: ${DB_USER:sales_batch}
+    password: ${DB_PASSWORD:}
+    hikari:
+      # バッチは単一スレッドで動くため、接続は少数で足りる
+      maximum-pool-size: ${DB_POOL_SIZE:4}
+      pool-name: monthly-sales-batch-pool
+
+mybatis:
+  mapper-locations: classpath*:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    # 取引明細をページ単位で読むため、JDBC のフェッチサイズもページ相当にそろえる
+    default-fetch-size: 1000
+    default-statement-timeout: 300
+
+batch:
+  monthly-sales:
+    # 1 トランザクションで登録する集計単位（店舗 × 商品）の件数
+    chunk-size: 500
+    # 取引明細を 1 回の SELECT で読み込む件数
+    page-size: 5000
+    # 不正データとして読み飛ばせる上限件数（超えたら異常終了する）
+    skip-limit: 1000
+    # デッドロック時の再試行回数（初回実行は含まない）
+    deadlock-retry-count: 3
+    retry-initial-interval: 200ms
+    retry-max-interval: 2s
+    # 終了期限。超過した場合は WARN ログを出力する
+    deadline: "06:00"
+
+logging:
+  level:
+    root: INFO
+    com.example.salesbatch: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{40} - %msg%n"

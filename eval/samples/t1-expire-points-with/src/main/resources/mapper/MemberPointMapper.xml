@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.expirepoints.infrastructure.MemberPointMapper">
+
+    <resultMap id="memberPointRecord" type="com.example.expirepoints.infrastructure.MemberPointRecord">
+        <id property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="points" column="points"/>
+        <result property="expiresOn" column="expires_on"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <!-- 有効期限当日はまだ使えるものとし、期限が業務日付より前のものだけを失効対象とする。 -->
+    <select id="selectExpirable" resultMap="memberPointRecord">
+        SELECT
+            id,
+            member_id,
+            points,
+            expires_on,
+            status
+        FROM
+            member_point
+        WHERE
+            expires_on &lt; #{targetDate}
+            AND status = 'ACTIVE'
+        ORDER BY
+            id
+    </select>
+
+    <!-- status = 'ACTIVE' を条件に入れ、他の処理がすでに失効させた行を数に含めない。 -->
+    <update id="updateToExpired">
+        UPDATE
+            member_point
+        SET
+            status = 'EXPIRED'
+        WHERE
+            status = 'ACTIVE'
+            AND id IN
+            <foreach item="id" collection="ids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </update>
+
+</mapper>

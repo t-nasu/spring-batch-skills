@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salesbatch.infrastructure.mybatis.mapper.SalesTransactionMapper">
+
+  <resultMap id="salesTransactionRecord"
+             type="com.example.salesbatch.infrastructure.mybatis.record.SalesTransactionRecord">
+    <!-- レコードの正準コンストラクタに、宣言順で割り当てる -->
+    <constructor>
+      <idArg column="transaction_id" javaType="_long"/>
+      <arg column="store_id" javaType="string"/>
+      <arg column="product_id" javaType="string"/>
+      <arg column="transaction_date" javaType="java.time.LocalDate"/>
+      <arg column="type" javaType="string"/>
+      <arg column="amount" javaType="java.math.BigDecimal"/>
+      <arg column="quantity" javaType="java.lang.Integer"/>
+    </constructor>
+  </resultMap>
+
+  <!--
+    対象年月の取引明細を (店舗 ID, 商品 ID, 取引 ID) 昇順で 1 ページ分取得する。
+
+    OFFSET を使わずカーソル（キーセットページング）で位置を指定しているため、
+    何ページ目でも取得コストが変わらず、再開時も位置の指定だけで続きから読める。
+    idx_sales_transaction_group (store_id, product_id, transaction_id, ...) により
+    並べ替え（filesort）なしで読める。
+  -->
+  <select id="selectPage" resultMap="salesTransactionRecord">
+    SELECT
+      transaction_id,
+      store_id,
+      product_id,
+      transaction_date,
+      type,
+      amount,
+      quantity
+    FROM
+      sales_transaction
+    WHERE
+      transaction_date &gt;= #{from}
+      AND transaction_date &lt; #{toExclusive}
+      <if test="afterStoreId != null">
+        AND (
+          store_id &gt; #{afterStoreId}
+          OR (store_id = #{afterStoreId} AND product_id &gt; #{afterProductId})
+          <if test="afterTransactionId != null">
+            OR (
+              store_id = #{afterStoreId}
+              AND product_id = #{afterProductId}
+              AND transaction_id &gt; #{afterTransactionId}
+            )
+          </if>
+        )
+      </if>
+    ORDER BY
+      store_id,
+      product_id,
+      transaction_id
+    LIMIT #{limit}
+  </select>
+
+</mapper>

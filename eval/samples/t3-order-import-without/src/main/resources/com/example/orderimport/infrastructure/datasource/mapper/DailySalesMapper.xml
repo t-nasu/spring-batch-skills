@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.orderimport.infrastructure.datasource.mapper.DailySalesMapper">
+
+    <resultMap id="dailySalesRowMap"
+               type="com.example.orderimport.infrastructure.datasource.dto.DailySalesRow">
+        <constructor>
+            <idArg column="business_date"  javaType="java.time.LocalDate"/>
+            <idArg column="product_code"   javaType="java.lang.String"/>
+            <arg   column="order_count"    javaType="_int"/>
+            <arg   column="total_quantity" javaType="_long"/>
+            <arg   column="total_amount"   javaType="java.math.BigDecimal"/>
+            <arg   column="aggregated_at"  javaType="java.time.LocalDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <!-- 再集計のたびに対象業務日付の行を一掃してから入れ直す（冪等性の担保）。 -->
+    <delete id="deleteByBusinessDate">
+        DELETE FROM daily_sales WHERE business_date = #{businessDate}
+    </delete>
+
+    <insert id="insertAll">
+        INSERT INTO daily_sales (
+            business_date, product_code, order_count, total_quantity, total_amount, aggregated_at
+        ) VALUES
+        <foreach collection="rows" item="row" separator=",">
+            (#{row.businessDate}, #{row.productCode}, #{row.orderCount},
+             #{row.totalQuantity}, #{row.totalAmount}, #{row.aggregatedAt})
+        </foreach>
+    </insert>
+
+    <select id="findByBusinessDate" resultMap="dailySalesRowMap">
+        SELECT business_date, product_code, order_count, total_quantity, total_amount, aggregated_at
+        FROM daily_sales
+        WHERE business_date = #{businessDate}
+        ORDER BY product_code
+    </select>
+
+</mapper>
