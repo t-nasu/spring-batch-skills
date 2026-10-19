@@ -1,6 +1,6 @@
 # バッチアプリケーションの層構成（レイヤード + DDD）
 
-> 状態: 草案。末尾の「未決事項」をチームで決めてから確定する。
+> 状態: 草案。「chunk の Reader とリポジトリ」をチームで決めてから確定する。
 
 ## パッケージ構成
 
@@ -27,7 +27,7 @@ presentation → application → domain ← infrastructure
 
 ## MyBatis の扱い
 
-- Mapper インタフェースと XML は infrastructure に置く。SQL は XML に書き、アノテーション SQL は使わない（草案。未決事項参照）
+- Mapper インタフェースと XML は infrastructure に置く。SQL はすべて XML に書き、アノテーション SQL（`@Select` など）は使わない
 - Mapper が返すのはテーブル形の DTO とし、domain のエンティティへの変換はリポジトリ実装の中で行う
 - domain のエンティティを MyBatis の resultMap に直接対応させない（テーブル構造の変更がドメインに波及するのを防ぐ）
 
@@ -36,18 +36,47 @@ presentation → application → domain ← infrastructure
 | 要素 | 層 | 備考 |
 |---|---|---|
 | Job / Step の定義（`@Configuration`） | presentation | 処理の流れのみを書き、業務判断は書かない |
-| ItemProcessor | presentation | 中身は application のサービスを呼ぶだけにする |
-| ItemReader / ItemWriter | infrastructure | 未決事項 1 参照 |
+| ItemProcessor | presentation | 中身は application の UseCase を呼ぶだけにする |
+| ItemReader / ItemWriter | infrastructure | 下記「chunk の Reader とリポジトリ」参照 |
 | 業務ルール | domain | Batch を使わない場合と同じコードになるようにする |
 
-## 命名（草案）
+## 命名
 
-- ユースケース: `〇〇UseCase` または `〇〇Service`（未決事項 3）
+- ユースケース: `〇〇UseCase`。`〇〇Service` という名は使わない（何でも「サービス」に入れる習慣を避けるため。ドメインサービスは `domain` に置き、役割を表す名を付ける）
 - リポジトリ: domain に `〇〇Repository`、infrastructure に `MyBatis〇〇Repository`
 - Mapper: `〇〇Mapper`
 
-## 未決事項（チームで決める）
+## chunk の Reader とリポジトリ（未決）
 
-1. **chunk の Reader/Writer はリポジトリを経由するか。** 大量件数ではカーソル読み（`MyBatisCursorItemReader` など）が効率的だが、リポジトリを迂回することになる。案 A: 読み取り専用の大量処理に限り infrastructure の Reader が直接 Mapper を使うことを許す。案 B: 必ずリポジトリを経由し、ページング読みにする。草案では **案 A** を推す。
-2. **アノテーション SQL を一切禁止するか。** 草案では禁止（XML に統一）。
-3. **ユースケースの命名は `UseCase` か `Service` か。**
+大量件数の chunk 処理で、Reader がリポジトリを経由せず Mapper を直接使うことを許すか。
+
+### 許す場合
+
+利点
+- カーソル読み（`MyBatisCursorItemReader`）で、件数が増えてもメモリ使用量が一定で、速い
+- MyBatis 公式の Reader が持つ再起動時の読み取り位置の保存を、そのまま使える
+- 書くコードが少ない
+
+欠点
+- 読み取りの経路がリポジトリと Reader の二つになる
+- 「どのデータを処理対象とするか」という業務条件が SQL に埋もれ、domain から見えなくなる
+- 一つ例外を作ると「ここも例外に」と広がりやすい。歯止めのルールが要る
+
+### 許さない場合
+
+利点
+- 層のルールに例外がない。読み取りが常に domain のリポジトリ経由で一貫する
+- テストでリポジトリを差し替えやすい
+
+欠点
+- domain のリポジトリにページ単位で読むメソッドが要り、domain に「ページ」という技術的な概念が入る
+- 再起動時の読み取り位置を自前で保存する Reader を書く必要がある（公式 Reader の機能が使えない）
+- OFFSET によるページングは件数が多いと遅く、処理中にデータが変わると取りこぼしや重複が起こりうる（キー値で区切るページングで緩和できるが、その分の実装が要る）
+
+### 草案の推し
+
+**条件付きで許す。** 次の歯止めを付ける。
+- 読み取り専用の大量処理に限る（更新は必ずリポジトリ経由）
+- Reader は infrastructure に置き、Mapper が返す DTO からドメインオブジェクトへの変換も Reader の中で行う。Processor には常にドメインオブジェクトが渡る
+- 処理対象を絞る条件は SQL の中に書くが、その意味を Reader のクラスコメントに業務の言葉で書く
+
