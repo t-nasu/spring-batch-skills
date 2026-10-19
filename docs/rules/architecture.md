@@ -6,7 +6,7 @@
 
 ```
 com.example.<アプリ名>
-├── presentation      起動口。Job/Step の定義、または ApplicationRunner。起動引数の解釈
+├── batch             起動口。Job/Step の定義、または ApplicationRunner。起動引数の解釈
 ├── application       ユースケース。トランザクション境界。ドメインの組み立てと呼び出し
 ├── domain            エンティティ、値オブジェクト、ドメインサービス、リポジトリのインタフェース
 └── infrastructure    リポジトリの実装（MyBatis の Mapper と XML）、ファイル入出力、外部連携
@@ -17,13 +17,13 @@ com.example.<アプリ名>
 ## 依存の向き
 
 ```
-presentation → application → domain ← infrastructure
+batch → application → domain ← infrastructure
 ```
 
 - domain は他の層に依存しない。Spring・MyBatis・Spring Batch の型を import しない
 - infrastructure は domain のリポジトリインタフェースを実装する（依存性の逆転）
-- presentation から infrastructure を直接呼ばない
-- Spring Batch の型（`Job`, `Step`, `ItemReader` など）が現れてよいのは presentation と infrastructure のみ
+- batch から infrastructure を直接呼ばない
+- Spring Batch の型（`Job`, `Step`, `ItemReader` など）が現れてよいのは batch と infrastructure のみ
 
 ## MyBatis の扱い
 
@@ -35,8 +35,8 @@ presentation → application → domain ← infrastructure
 
 | 要素 | 層 | 備考 |
 |---|---|---|
-| Job / Step の定義（`@Configuration`） | presentation | 処理の流れのみを書き、業務判断は書かない |
-| ItemProcessor | presentation | 中身は application の UseCase を呼ぶだけにする |
+| Job / Step の定義（`@Configuration`） | batch | 処理の流れのみを書き、業務判断は書かない |
+| ItemProcessor | batch | 中身は application の UseCase を呼ぶだけにする |
 | ItemReader / ItemWriter | infrastructure | 下記「chunk の Reader とリポジトリ」参照 |
 | 業務ルール | domain | Batch を使わない場合と同じコードになるようにする |
 

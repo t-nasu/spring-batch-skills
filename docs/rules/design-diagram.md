@@ -41,6 +41,6 @@ flowchart TD
 
 | ステップ | 種類 | Reader | Processor | Writer | 異常時 |
 |---|---|---|---|---|---|
-| importOrderStep | chunk 1000 | `OrderCsvItemReader`（infrastructure） | `ImportOrderItemProcessor`（presentation）→ `ImportOrderUseCase` | `OrderItemWriter`（infrastructure） | 不正行は 100 件までスキップ |
+| importOrderStep | chunk 1000 | `OrderCsvItemReader`（infrastructure） | `ImportOrderItemProcessor`（batch）→ `ImportOrderUseCase` | `OrderItemWriter`（infrastructure） | 不正行は 100 件までスキップ |
 | aggregateSalesStep | tasklet | ― | `AggregateDailySalesUseCase` | ― | 失敗で通知へ |
 | notifyFailureStep | tasklet | ― | `NotifyJobFailureUseCase` | ― | ― |
