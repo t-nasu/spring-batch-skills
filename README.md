@@ -6,6 +6,7 @@ Spring Batch / Spring Boot でバッチを新規開発するための、Claude C
 
 - [skills/spring-batch-dev](skills/spring-batch-dev/SKILL.md): スキル本体。チーム固有の決まりは `references/` にある
 - [eval](eval/README.md): スキルの有無で出力を比べる課題と照合スクリプト
+- [docs/usage.md](docs/usage.md): 開発者向けの使い方
 - [docs/decisions](docs/decisions/README.md): 決まりを定めた経緯と理由（配布しない）
 - [scripts/install.sh](scripts/install.sh): 開発対象のプロジェクトへスキルを入れる（`.claude/skills` と `.agents/skills` の両方）
 

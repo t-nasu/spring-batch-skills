@@ -1,21 +1,32 @@
 ---
 name: spring-batch-dev
-description: Java/Gradle でバッチ処理（Spring Batch または素の Spring Boot、MySQL + MyBatis）を新規に設計・実装するときに使う。バッチ処理仕様書からの設計、Batch か素の Boot かの判断、レイヤード + DDD の層構成、使う版の指定を定める。Use when creating a new batch job with Spring Batch or Spring Boot.
+description: Java/Gradle でバッチ処理（Spring Batch または素の Spring Boot、MySQL + MyBatis）を新規に設計・実装するとき、また既存のバッチを変更するときに使う。バッチ処理仕様書からの設計、Batch か素の Boot かの判断、レイヤード + DDD の層構成、使う版の指定を定める。Use when creating or changing a batch job with Spring Batch or Spring Boot.
 ---
 
-# バッチ処理の新規開発
+# バッチ処理の開発
 
 このチームのバッチ開発の決まりである。一般的な Spring Batch の知識はすでに持っている前提で、ここではチーム固有の決まりだけを定める。決まりと一般論が食い違うときは、決まりに従う。
 
-## 進め方
+## 新規開発の進め方
 
 次の順に進める。設計の承認を得る前にコードを書いてはならない。
 
 1. **仕様を受け取る。** 利用者からバッチ処理仕様書（書式は [references/batch-spec-template.md](references/batch-spec-template.md)）を受け取る。仕様書が無ければ、この書式を示して埋めてもらう。★ 項目の不足だけを、まとめて一度に質問する。
 2. **Batch か素の Boot かを決める。** [references/batch-vs-boot.md](references/batch-vs-boot.md) の条件に照らして決め、根拠（仕様のどの項目によるか）を一行で示す。迷ったら素の Spring Boot とする。
 3. **設計図を書く。** [references/design-diagram.md](references/design-diagram.md) に従い、Mermaid の流れ図とステップ表を `docs/batch-specs/<ジョブ名>.design.md` に書く。利用者に見せて承認を待つ。
-4. **実装する。** 下の「社内スキルとの関係」に従って社内スキルを使う。社内スキルで定まらない点の層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。
+4. **実装する。** 後の「社内スキルとの関係」に従って社内スキルを使う。社内スキルで定まらない点の層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。
 5. **確かめる。** `./gradlew build` が通ること、設計図とコードが食い違っていないことを確かめ、食い違いがあれば設計図かコードを直す。
+
+## 変更の進め方
+
+仕様書（`docs/batch-specs/<ジョブ名>.md`）と設計図（`docs/batch-specs/<ジョブ名>.design.md`）を正本とする。コードだけを直してはならない。
+
+1. **仕様書を直す。** 利用者が仕様書を直していればそれを読む。会話で変更を頼まれた場合は、先に仕様書へ書き戻し、その差分を利用者に示す。
+2. **判断を見直す。** 変更により Batch か素の Boot かの判断が変わらないかを [references/batch-vs-boot.md](references/batch-vs-boot.md) で確かめる。変わる場合は、その旨と根拠をまず利用者に伝える。
+3. **設計図を直す。** 仕様書の変更点を設計図に反映し、変わった箇所（流れ図・ステップ表・クラス一覧）を示して承認を待つ。
+4. **コードを直す。** 承認ののち、新規開発の 4・5 と同じ決まりで直し、設計図とコードが食い違っていないことを確かめる。
+
+仕様書や設計図が無い既存のバッチを変更する場合は、まずコードから仕様書と設計図を起こし、利用者に確かめてもらってから 1 に進む。
 
 ## 社内スキルとの関係
 
