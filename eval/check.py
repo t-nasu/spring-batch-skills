@@ -45,7 +45,7 @@ def check(project, expect, build):
     java_files = read_all(java_root.rglob("*.java")) if java_root.exists() else {}
     app_root = find_layer_dirs(java_root) if java_root.exists() else None
     layers = {c.name for c in app_root.iterdir() if c.is_dir()} if app_root else set()
-    add("四層のパッケージがそろっている", LAYERS <= layers, f"見つかった層: {sorted(layers)}")
+    add("4層のパッケージがそろっている", LAYERS <= layers, f"見つかった層: {sorted(layers)}")
     add("presentation パッケージが無い", "presentation" not in layers)
 
     bad = [p.name for p, t in java_files.items()

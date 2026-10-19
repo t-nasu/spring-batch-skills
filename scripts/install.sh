@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# スキルを開発対象のプロジェクトへ入れる。Claude Code 用と Codex 用の両方の置き場所へ写す。
+# スキルを開発対象のプロジェクトへ入れる。Claude Code 用と Codex 用の両方の置き場所へコピーする。
 # 使い方: scripts/install.sh <開発対象プロジェクトのディレクトリ>
 set -euo pipefail
 

@@ -10,15 +10,15 @@ scripts/install.sh <開発対象のリポジトリ>
 
 ## 新しいバッチを作る
 
-1. [仕様書の雛形](../skills/spring-batch-dev/references/batch-spec-template.md) を `docs/batch-specs/<ジョブ名>.md` に写して埋める。空欄があってもエージェントが質問する
+1. [仕様書の雛形](../skills/spring-batch-dev/references/batch-spec-template.md) を `docs/batch-specs/<ジョブ名>.md` にコピーして埋める。空欄があってもエージェントが質問する
 2. エージェントに頼む。スキル名を添えると、Claude Code でも Codex でも確かに使われる
 
    > docs/batch-specs/<ジョブ名>.md の仕様でバッチを作って。spring-batch-dev スキルを使うこと。
 
-3. エージェントが出す設計図（`docs/batch-specs/<ジョブ名>.design.md`）を検める
+3. エージェントが出す設計図（`docs/batch-specs/<ジョブ名>.design.md`）を確認する
    - Spring Batch か素の Spring Boot かの判断と根拠
    - Mermaid の流れ図とステップ表
-   - chunk の Reader があれば、二案（Mapper を直接使う / リポジトリを経由する）のどちらにするか選ぶ
+   - chunk の Reader があれば、2つの案（Mapper を直接使う / リポジトリを経由する）のどちらにするか選ぶ
 4. 承認すると実装に入る。ビルドが通ったら、社内の `review-*` スキルで点検させる
 5. 仕様書・設計図・コードを一緒にコミットする
 
@@ -31,7 +31,7 @@ scripts/install.sh <開発対象のリポジトリ>
    > docs/batch-specs/<ジョブ名>.md を直したので、バッチに反映して。spring-batch-dev スキルを使うこと。
 
    会話で頼んでもよい。その場合もエージェントが先に仕様書へ書き戻す
-2. エージェントが設計図の変わる箇所を示すので、検めて承認する
+2. エージェントが設計図の変わる箇所を示すので、確認して承認する
 3. 承認すると、コードを直して設計図との食い違いを確かめる
 4. 仕様書・設計図・コードを一緒にコミットする
 

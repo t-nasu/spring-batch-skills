@@ -41,7 +41,7 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 
 - `add-inbound-batch` は使わない。バッチの入口は本スキルの決まりで作る
 - application 層のクラスは `〇〇UseCase` と名付ける。社内スキルが `Service` と書いていても `UseCase` と読み替える
-- chunk の Reader の作り方は、[references/architecture.md](references/architecture.md) の二案から開発者が選んだものに従う
+- chunk の Reader の作り方は、[references/architecture.md](references/architecture.md) の2つの案から開発者が選んだものに従う
 
 社内スキルが入っていなければ、本スキルの参照資料だけで進める。
 
