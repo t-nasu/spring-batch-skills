@@ -14,7 +14,8 @@ BOOT_VERSION = "4.1.1"
 MYBATIS_STARTER_VERSION = "4.1.0"
 JAVA_VERSION = "25"
 GRADLE_VERSION = "9.8.1"
-BOM_MANAGED = ["spring-batch-core", "mysql-connector-j", "spring-boot-starter"]
+BOM_MANAGED = ["org.springframework.batch:spring-batch-core", "com.mysql:mysql-connector-j",
+               "org.springframework.boot:spring-boot-starter"]
 
 
 def read_all(paths):
@@ -64,6 +65,13 @@ def check(project, expect, build):
 
     gradle_files = read_all([p for p in (project / "build.gradle", project / "build.gradle.kts") if p.exists()])
     g = "\n".join(gradle_files.values())
+    props_file = project / "gradle.properties"
+    props = dict(re.findall(r"^\s*([\w.]+)\s*=\s*(.+?)\s*$", props_file.read_text(), re.M)) if props_file.exists() else {}
+    # gradle.properties の値で ${name}・$name・JavaLanguageVersion.of(name as Integer) を置き換える
+    for k, v in props.items():
+        g = g.replace("${" + k + "}", v).replace("$" + k, v)
+    g = re.sub(r"JavaLanguageVersion\.of\(\s*(\w+)(?:\s+as\s+Integer)?\s*\)",
+               lambda m: f"JavaLanguageVersion.of({props.get(m.group(1), m.group(1))})", g)
     add(f"Spring Boot {BOOT_VERSION}", bool(re.search(rf"org\.springframework\.boot['\"]?\)?\s*version\s*\(?['\"]{re.escape(BOOT_VERSION)}", g)))
     add(f"MyBatis Starter {MYBATIS_STARTER_VERSION}", f"mybatis-spring-boot-starter:{MYBATIS_STARTER_VERSION}" in g)
     add(f"Java {JAVA_VERSION} の toolchain",
