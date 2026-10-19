@@ -5,7 +5,7 @@
 1. 利用者が [仕様書テンプレート](batch-spec-template.md) を埋めて渡す
 2. エージェントは ★ 項目の不足だけを質問する
 3. [判断基準](batch-vs-boot.md) に照らし、Spring Batch か素の Spring Boot かを根拠とともに決める
-4. 設計図を `docs/batch-specs/<ジョブ名>.design.md` に書き、**利用者の承認を得てから** 実装に入る
+4. 設計図を `docs/batch-specs/<ジョブ名>.design.md` に、実装計画を [implementation-plan.md](implementation-plan.md) に従って書き、**両方の承認を得てから** 実装に入る
 5. 実装後、設計図とコードが食い違っていないかを確かめる
 
 ## 設計図に書くこと
@@ -15,6 +15,9 @@
 - 各ステップの表: 名前、種類（chunk / tasklet）、chunk なら件数、Reader / Processor / Writer の各クラス名と層、スキップ・リトライの方針
 - chunk の Reader があれば、その作り方の2つの案（[architecture.md](architecture.md) の「chunk の Reader とリポジトリ」）と推奨案。どちらにするかを利用者に選んでもらう
 - 使うクラスの一覧（層ごと）
+- 集約の一覧（集約名と、新規か既存か）、使うテーブルの物理名、ユースケース名、主な値オブジェクト
+
+社内スキルの名前・呼び出す順・渡す引数は設計図に書かない。それらは実装計画に書く。
 
 ## 図の描き方の決まり
 

@@ -10,6 +10,7 @@
 | [0004](0004-naming-and-sql.md) | `UseCase` の命名、SQL は XML、最上位パッケージは `batch` | 2026-10-19 |
 | [0005](0005-versions.md) | 版はスキル内の表で指定し、社内のリポジトリは使わない | 2026-10-19 |
 | [0006](0006-in-house-skills.md) | 社内スキルは名で示して従わせ、`UseCase` の命名などは本スキルを優先 | 2026-10-19 |
+| [0007](0007-implementation-plan.md) | 実装計画を設計図とは別に `docs/batch-specs/plans/` へ残す | 2026-10-19 |
 
 ## 未決
 
