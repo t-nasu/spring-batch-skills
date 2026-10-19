@@ -30,20 +30,16 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 
 ## 社内スキルとの関係
 
-次の社内スキルが入っていれば、該当する作業ではそのスキルの手順と決まりに従う。
+使えるスキルのうち、名前が `add-` で始まるもの（部品を追加する手順）と `review-` で始まるもの（実装を点検する手順）を社内スキルとして扱う。社内スキルは増減するので、決まった名前を当てにせず、作業のたびに使えるスキルの一覧と説明文から、その作業に合うものを選ぶ。
 
-- ドメイン: `add-aggregate`, `add-domain-model`, `add-value-object`, `add-domain-service`, `add-exception`
-- アプリケーション: `add-usecase`
-- インフラストラクチャ: `add-repository`, `add-mybatis-mapper`, `add-outboud-kafka-producer`, `add-outbound-s3-client`
-- 実装後の点検: `review-layerd-ddd`, `review-dependency`, `review-class-design`, `review-naming`, `review-sql`
+- 実装計画を書くとき、各手順に合う `add-` スキルを選び、手順の表に名前と引数を書く。合うものが無ければ「（なし）」と書き、本スキルの決まりで作る
+- 実装の後、合う `review-` スキルをすべて使って点検する
+- 社内スキルの手順と決まりに従う。ただし次の点は、社内スキルと食い違っても本スキルに従う
+  - バッチやスケジュールタスクの入口（起動処理）を追加する社内スキルは使わない。入口は本スキルの決まりで作る
+  - application 層のクラスは `〇〇UseCase` と名付ける。社内スキルが `Service` と書いていても `UseCase` と読み替える
+  - chunk の Reader の作り方は、[references/architecture.md](references/architecture.md) の2つの案から開発者が選んだものに従う
 
-ただし次の点は、社内スキルと食い違っても本スキルに従う。
-
-- `add-inbound-batch` は使わない。バッチの入口は本スキルの決まりで作る
-- application 層のクラスは `〇〇UseCase` と名付ける。社内スキルが `Service` と書いていても `UseCase` と読み替える
-- chunk の Reader の作り方は、[references/architecture.md](references/architecture.md) の2つの案から開発者が選んだものに従う
-
-社内スキルが入っていなければ、本スキルの参照資料だけで進める。
+社内スキルが1つも無ければ、本スキルの参照資料だけで進める。
 
 ## 必ず守ること（要約）
 
