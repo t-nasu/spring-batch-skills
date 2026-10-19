@@ -49,7 +49,7 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 
 詳細は各参照資料にある。ここに挙げるのは破りやすいものだけである。
 
-- パッケージは `batch` / `application` / `domain` / `infrastructure` の四つ。`presentation` という名は使わない
+- パッケージは `batch` / `application` / `domain` / `infrastructure` の4つ。`presentation` という名は使わない
 - `domain` は Spring・MyBatis・Spring Batch の型を import しない
 - ユースケースのクラス名は `〇〇UseCase`。`〇〇Service` という名は付けない
 - MyBatis の SQL はすべて XML に書く。`@Select` などのアノテーション SQL は使わない
