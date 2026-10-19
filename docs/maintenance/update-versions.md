@@ -5,7 +5,7 @@
 1. Maven Central で最新正式版を確かめる（M / RC は除く）
 
    ```bash
-   for a in org/springframework/boot/spring-boot org/mybatis/spring/boot/mybatis-spring-boot-starter; do
+   for a in org/springframework/boot/spring-boot org/mybatis/spring/boot/mybatis-spring-boot-starter com/tngtech/archunit/archunit-junit5; do
      curl -sS https://repo1.maven.org/maven2/$a/maven-metadata.xml \
        | grep -oE '<version>[0-9]+\.[0-9]+\.[0-9]+</version>' | sed 's/<[^>]*>//g' | sort -V | tail -1
    done

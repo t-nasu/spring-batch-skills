@@ -22,6 +22,9 @@ batch → application → domain ← infrastructure
 - infrastructure は domain のリポジトリインタフェースを実装する（依存性の逆転）
 - batch から infrastructure を直接呼ばない
 - Spring Batch の型（`Job`, `Step`, `ItemReader` など）が現れてよいのは batch と infrastructure のみ
+- domain に public な setter を置かない。Lombok の `@Data` / `@Setter` も使わない
+
+これらは [ArchitectureSpec](architecture-spec.md) で検証する。
 
 ## MyBatis の扱い
 
