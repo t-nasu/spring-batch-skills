@@ -1,7 +1,5 @@
 # バッチアプリケーションの層構成（レイヤード + DDD）
 
-> 状態: 確定（2026-10-19）。
-
 ## パッケージ構成
 
 ```
@@ -29,7 +27,7 @@ batch → application → domain ← infrastructure
 
 - Mapper インタフェースと XML は infrastructure に置く。SQL はすべて XML に書き、アノテーション SQL（`@Select` など）は使わない
 - Mapper が返すのはテーブル形の DTO とし、domain のエンティティへの変換はリポジトリ実装の中で行う
-- domain のエンティティを MyBatis の resultMap に直接対応させない（テーブル構造の変更がドメインに波及するのを防ぐ）
+- domain のエンティティを MyBatis の resultMap に直接対応させない
 
 ## Spring Batch を使う場合の置き場所
 
@@ -42,41 +40,15 @@ batch → application → domain ← infrastructure
 
 ## 命名
 
-- ユースケース: `〇〇UseCase`。`〇〇Service` という名は使わない（何でも「サービス」に入れる習慣を避けるため。ドメインサービスは `domain` に置き、役割を表す名を付ける）
+- ユースケース: `〇〇UseCase`。`〇〇Service` という名は使わない
+- ドメインサービス: `domain` に置き、役割を表す名を付ける（`〇〇Service` としない）
 - リポジトリ: domain に `〇〇Repository`、infrastructure に `MyBatis〇〇Repository`
 - Mapper: `〇〇Mapper`
 
 ## chunk の Reader とリポジトリ
 
-大量件数の chunk 処理で、Reader がリポジトリを経由せず Mapper を直接使うことを許すか。
+読み取り専用の大量処理に限り、Reader がリポジトリを経由せず Mapper を直接使ってよい（`MyBatisCursorItemReader` など）。その場合は次を守る。
 
-### 許す場合
-
-利点
-- カーソル読み（`MyBatisCursorItemReader`）で、件数が増えてもメモリ使用量が一定で、速い
-- MyBatis 公式の Reader が持つ再起動時の読み取り位置の保存を、そのまま使える
-- 書くコードが少ない
-
-欠点
-- 読み取りの経路がリポジトリと Reader の二つになる
-- 「どのデータを処理対象とするか」という業務条件が SQL に埋もれ、domain から見えなくなる
-- 一つ例外を作ると「ここも例外に」と広がりやすい。歯止めのルールが要る
-
-### 許さない場合
-
-利点
-- 層のルールに例外がない。読み取りが常に domain のリポジトリ経由で一貫する
-- テストでリポジトリを差し替えやすい
-
-欠点
-- domain のリポジトリにページ単位で読むメソッドが要り、domain に「ページ」という技術的な概念が入る
-- 再起動時の読み取り位置を自前で保存する Reader を書く必要がある（公式 Reader の機能が使えない）
-- OFFSET によるページングは件数が多いと遅く、処理中にデータが変わると取りこぼしや重複が起こりうる（キー値で区切るページングで緩和できるが、その分の実装が要る）
-
-### 決定
-
-**条件付きで許す。** 次の歯止めを付ける。
-- 読み取り専用の大量処理に限る（更新は必ずリポジトリ経由）
+- 更新は必ずリポジトリを経由する
 - Reader は infrastructure に置き、Mapper が返す DTO からドメインオブジェクトへの変換も Reader の中で行う。Processor には常にドメインオブジェクトが渡る
-- 処理対象を絞る条件は SQL の中に書くが、その意味を Reader のクラスコメントに業務の言葉で書く
-
+- 処理対象を絞る条件は SQL に書き、その意味を Reader のクラスコメントに業務の言葉で書く

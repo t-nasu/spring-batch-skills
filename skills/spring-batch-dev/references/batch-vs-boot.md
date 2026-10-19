@@ -1,14 +1,10 @@
 # Spring Batch を使うか、素の Spring Boot で済ませるか
 
-> 状態: 草案。チームの合意を経て確定する。
-
 ## 基本方針
 
 **迷ったら素の Spring Boot で始める。** Spring Batch は、下記「Batch を選ぶ条件」のいずれかに明確に当てはまる場合にのみ導入する。
 
-理由: Spring Batch を入れると、JobRepository のテーブル (`BATCH_*`) の管理、メジャー版での API 破壊的変更への追従、フレームワーク固有の概念の学習といった継続的なコストが発生する。要件がそれを必要としないなら、払う理由がない。
-
-ただし、業務ロジックを application 層・domain 層に置き、Spring Batch や起動方式に依存させないことで、後から Batch へ移す（またはその逆）費用を小さく保つ。詳細は [architecture.md](architecture.md)。
+業務ロジックは application 層・domain 層に置き、Spring Batch や起動方式に依存させない。詳細は [architecture.md](architecture.md)。
 
 ## Batch を選ぶ条件（いずれかに該当）
 
