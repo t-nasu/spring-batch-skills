@@ -6,6 +6,12 @@
 scripts/install.sh <開発対象のリポジトリ>
 ```
 
+Windows では PowerShell で次を実行する。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 <開発対象のリポジトリ>
+```
+
 できた `.claude/skills/` と `.agents/skills/` を開発対象のリポジトリにコミットする。Claude Code は前者、Codex は後者を読む。社内スキル（`add-*`, `review-*`）も同じ置き場所に入れておく。
 
 ## 新しいバッチを作る

@@ -4,10 +4,10 @@
 
 ## 手順
 
-1. このスキルの `templates/check-versions.sh` を実行する。Web 検索や Web ページの取得は使わない
+1. このスキルの `templates/CheckVersions.java` を実行する。JDK（21 以上）だけで動き、OS を問わない。Web 検索や Web ページの取得は使わない
 
    ```bash
-   bash <スキルのパス>/templates/check-versions.sh
+   java <スキルのパス>/templates/CheckVersions.java
    ```
 
    次の版が `名前=版` の形で表示される。
@@ -24,7 +24,7 @@
    | `foojay-resolver` | 最新正式版（Gradle プラグイン `org.gradle.toolchains.foojay-resolver-convention`） |
    | `java-lts` | 最新の LTS |
 
-2. 1つでも「割り出せなかった」と表示されたら（終了コード 1）、実装に進まず、どの版を使うかを開発者に質問する
+2. 1つでも `NOT_FOUND` と表示されたら（終了コード 1）、実装に進まず、どの版を使うかを開発者に質問する
 3. 使った版を開発者に伝える
 
 ## 書き方
