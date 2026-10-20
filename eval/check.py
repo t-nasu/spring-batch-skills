@@ -15,7 +15,7 @@ MYBATIS_STARTER_VERSION = "4.1.0"
 JAVA_VERSION = "25"
 ARCHUNIT_VERSION = "1.5.1"
 SPOCK_VERSION = "2.5-groovy-5.0"
-GRADLE_VERSION = "9.8.1"
+GRADLE_VERSION = "9.8.2"
 BOM_MANAGED = ["org.springframework.batch:spring-batch-core", "com.mysql:mysql-connector-j",
                "org.springframework.boot:spring-boot-starter"]
 
