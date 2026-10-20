@@ -45,6 +45,7 @@ if [ -n "$boot" ]; then
 fi
 
 show archunit "$(latest com/tngtech/archunit/archunit)"
+show aws-sdk-bom "$(latest software/amazon/awssdk/bom)"
 show gradle "$(fetch https://services.gradle.org/versions/current | grep -oE '"version" *: *"[^"]+"' | sed 's/.*"\([^"]*\)"$/\1/')"
 show foojay-resolver "$(fetch https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver-convention/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin/maven-metadata.xml | prop release)"
 show java-lts "$(fetch https://api.adoptium.net/v3/info/available_releases | grep -oE '"most_recent_lts" *: *[0-9]+' | grep -oE '[0-9]+$')"

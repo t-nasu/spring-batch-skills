@@ -19,6 +19,7 @@
    | `mybatis-spring-boot-starter` | その Spring Boot と同じメジャー・マイナー版に対応するもののうち最新 |
    | `spock-core` | その Groovy と同じメジャー・マイナー版に合うもののうち最新 |
    | `archunit` | 最新正式版 |
+   | `aws-sdk-bom` | 最新正式版（AWS を使う場合だけ使う） |
    | `gradle` | 最新正式版 |
    | `foojay-resolver` | 最新正式版（Gradle プラグイン `org.gradle.toolchains.foojay-resolver-convention`） |
    | `java-lts` | 最新の LTS |
