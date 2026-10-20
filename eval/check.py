@@ -98,6 +98,9 @@ def check(project, expect, build):
         all_java = "\n".join(java_files.values())
         add("再開のため DB の JobRepository を設定している",
             bool(re.search(r"JdbcDefaultBatchConfiguration|@EnableJdbcJobRepository|JdbcJobRepositoryFactoryBean", all_java)))
+    add("micrometer-registry-prometheus を使う", "io.micrometer:micrometer-registry-prometheus" in g)
+    main_java = "\n".join(t for p, t in java_files.items() if "/batch/" in p.as_posix())
+    add("batch 層で batch.job.failures を増やす", '"batch.job.failures"' in main_java)
     if expect == "boot":
         all_java = "\n".join(java_files.values())
         add("ApplicationRunner を使う", "ApplicationRunner" in all_java)

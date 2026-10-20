@@ -48,12 +48,25 @@ class ArchitectureSpec extends Specification {
         noExceptionThrown()
     }
 
-    def "domain は Spring・MyBatis・Spring Batch に依存しない"() {
+    def "domain は Spring・MyBatis・Spring Batch・Micrometer に依存しない"() {
         given:
         def rule = noClasses()
                 .that().resideInAPackage(DOMAIN)
                 .should().dependOnClassesThat()
-                .resideInAnyPackage("org.springframework..", "org.apache.ibatis..", "org.mybatis..")
+                .resideInAnyPackage("org.springframework..", "org.apache.ibatis..", "org.mybatis..", "io.micrometer..")
+
+        when:
+        rule.check(classes)
+
+        then:
+        noExceptionThrown()
+    }
+
+    def "application は Micrometer に依存しない（メトリクスは batch 層で扱う）"() {
+        given:
+        def rule = noClasses()
+                .that().resideInAPackage(APPLICATION)
+                .should().dependOnClassesThat().resideInAPackage("io.micrometer..")
 
         when:
         rule.check(classes)

@@ -12,7 +12,7 @@
 
 - 判断結果（Batch / 素の Boot）とその根拠（仕様のどの項目による判断か）
 - 処理の流れ図（Mermaid の `flowchart`）
-- 各ステップの表: 名前、種類（chunk / tasklet）、chunk なら件数、Reader / Processor / Writer の各クラス名と層、スキップ・リトライの方針
+- 各ステップの表: 名前、種類（chunk / tasklet）、chunk なら件数、Reader / Processor / Writer の各クラス名と層、スキップ・リトライの方針、異常時に増やすカウンタ
 - chunk の Reader があれば、その作り方の2つの案（[architecture.md](architecture.md) の「chunk の Reader とリポジトリ」）と推奨案。どちらにするかを利用者に選んでもらう
 - 使うクラスの一覧（層ごと）
 - 集約の一覧（集約名と、新規か既存か）、使うテーブルの物理名、ユースケース名、主な値オブジェクト
@@ -29,20 +29,20 @@
 
 ## 例（Spring Batch）
 
-仕様: 前日の注文を CSV から取り込み、検証し、売上を集計する。不正行は 100 件まで飛ばし、失敗時は通知する。
+仕様: 前日の注文を CSV から取り込み、検証し、売上を集計する。不正行は 100 件まで飛ばす。
 
 ```mermaid
 flowchart TD
     start((開始)) --> importStep["importOrderStep（chunk 1000）<br/>CSV → 注文テーブル"]
     importStep -->|COMPLETED| aggregateStep["aggregateSalesStep（tasklet）<br/>日次売上を集計"]
-    importStep -->|FAILED| notifyStep["notifyFailureStep（tasklet）<br/>担当へ通知"]
+    importStep -->|FAILED| failed((異常終了))
     aggregateStep -->|COMPLETED| done((正常終了))
-    aggregateStep -->|FAILED| notifyStep
-    notifyStep --> failed((異常終了))
+    aggregateStep -->|FAILED| failed
 ```
 
 | ステップ | 種類 | Reader | Processor | Writer | 異常時 |
 |---|---|---|---|---|---|
-| importOrderStep | chunk 1000 | `OrderCsvItemReader`（infrastructure） | `ImportOrderItemProcessor`（batch）→ `ImportOrderUseCase` | `OrderItemWriter`（infrastructure） | 不正行は 100 件までスキップ |
-| aggregateSalesStep | tasklet | ― | `AggregateDailySalesUseCase` | ― | 失敗で通知へ |
-| notifyFailureStep | tasklet | ― | `NotifyJobFailureUseCase` | ― | ― |
+| importOrderStep | chunk 1000 | `OrderCsvItemReader`（infrastructure） | `ImportOrderItemProcessor`（batch）→ `ImportOrderUseCase` | `OrderItemWriter`（infrastructure） | 不正行は 100 件までスキップし `batch.item.skips` を増やす |
+| aggregateSalesStep | tasklet | ― | `AggregateDailySalesUseCase` | ― | 異常終了 |
+
+異常終了したときは、ジョブのリスナーが `batch.job.failures` を増やす（[metrics.md](metrics.md)）。

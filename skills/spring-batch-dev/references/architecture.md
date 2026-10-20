@@ -23,6 +23,7 @@ batch → application → domain ← infrastructure
 - batch から infrastructure を直接呼ばない
 - Spring Batch の型（`Job`, `Step`, `ItemReader` など）が現れてよいのは batch と infrastructure のみ
 - domain に public な setter を置かない。Lombok の `@Data` / `@Setter` も使わない
+- domain と application は Micrometer に依存しない。メトリクスは batch 層で扱う
 
 これらは [ArchitectureSpec](architecture-spec.md) で検証する。
 

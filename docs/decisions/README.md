@@ -12,6 +12,7 @@
 | [0006](0006-in-house-skills.md) | 社内スキルは名で示して従わせ、`UseCase` の命名などは本スキルを優先 | 2026-10-19 |
 | [0007](0007-implementation-plan.md) | 実装計画を設計図とは別に `docs/batch-specs/plans/` へ残す | 2026-10-19 |
 | [0008](0008-architecture-spec.md) | ArchitectureSpec（ArchUnit）で層構成と domain の決まりを検証する | 2026-10-19 |
+| [0009](0009-metrics-notification.md) | 異常時の通知は Prometheus のカウンタで行う | 2026-10-20 |
 
 ## 未決
 

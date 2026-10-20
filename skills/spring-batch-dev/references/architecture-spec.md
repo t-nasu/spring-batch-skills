@@ -30,7 +30,8 @@
 | フィーチャー | 内容 |
 |---|---|
 | 依存の向き | `batch → application → domain ← infrastructure` のみであること |
-| domain のフレームワーク非依存 | domain が Spring・MyBatis・Spring Batch に依存しないこと |
+| domain のフレームワーク非依存 | domain が Spring・MyBatis・Spring Batch・Micrometer に依存しないこと |
+| application のメトリクス非依存 | application が Micrometer に依存しないこと |
 | application 層の命名 | `〇〇Service` という名のクラスが無いこと |
 | domain の setter | public な setter が無いこと（Lombok の `@Data` / `@Setter` が生成するものを含む） |
 | domain の Lombok | ソースで Lombok の `@Data` / `@Setter` を使っていないこと |
