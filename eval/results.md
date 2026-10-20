@@ -56,3 +56,10 @@ t2（スキルあり）のコピーに、仕様書を直さず会話で「スキ
 - わざと違反を入れたコピー（domain に `@Data` と `@Component`、`@Setter`、application に `BadService` と infrastructure への参照）では、5つのルールすべてが失敗した
 - 更新したスキルで t3 を作り直したところ、業務のコードより先に雛形そのままの ArchitectureSpec が置かれ、実装計画（`docs/batch-specs/plans/`）も作られた。照合スクリプトは 17/17、ビルドとテストも通った（toolchain を 21 に置き換えて確認）
 - 2026-10-20 に Spock 版へ改めた。Spock 版（Spock 2.5-groovy-5.0、ArchUnit 1.5.1）でも、3本で5つのフィーチャーすべてが通り、違反を入れたコピーでは5つとも失敗した
+
+## 2026-10-20 JobRepository の落とし穴（Claude Code / Opus 5）
+
+- 見直しで、スキルありの t2・t3 が、再開を求める仕様なのに既定の JobRepository（記録がメモリにしか残らない）のままだと分かった。コンパイルもテストも通るため、照合スクリプトでも見逃していた。スキルなしの t2・t3 は DB の JobRepository を設定していた
+- 参照資料 `spring-batch-6-pitfalls.md` を足し、照合スクリプトに「再開のため DB の JobRepository を設定している」を加えた
+- 更新したスキルで t2・t3 を作り直したところ、2本とも DB の JobRepository を設定し、照合は 19/19。自ら「途中で落ちたら続きから再開する」テストも書き、ビルドとテストが通った（toolchain を 21 に置き換えて確認）
+- この回から、エージェントへの条件を「Web 検索・Web 取得は不可、ローカルのコマンドはネットに届く」に改めた。2本とも決められた curl のコマンドで最新版を確かめた
