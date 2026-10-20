@@ -1,32 +1,32 @@
 # 使用する版
 
-> 2026-10-19 時点の正式版。最新版を確かめられなかったときの控えとして使う。
+プロジェクトを新たに作るときは、その時点の最新正式版を使う。学習時の記憶にある版は使わない。
 
-| 対象 | 版 | 指定方法 |
-|---|---|---|
-| Java | 25 (LTS) | Gradle の toolchain で指定 |
-| Gradle | 9.8.1 | Gradle Wrapper |
-| Spring Boot | 4.1.1 | `org.springframework.boot` プラグイン |
-| MyBatis Spring Boot Starter | 4.1.0 | 明示する（BOM 管理外。Spring Boot 4.1 対応版） |
-| ArchUnit（`archunit`） | 1.5.1 | 明示する（BOM 管理外） |
-| Spock（`spock-core`） | 2.5-groovy-5.0 | 明示する（BOM 管理外。Groovy 5 用） |
+## 手順
 
-## エージェントへの指示
-
-1. プロジェクトを新たに作るときは、ローカルのコマンドで Maven Central の最新正式版を確かめる。Web 検索や Web ページの取得は使わず、次のコマンドだけを使う。
+1. このスキルの `templates/check-versions.sh` を実行する。Web 検索や Web ページの取得は使わない
 
    ```bash
-   for a in org/springframework/boot/spring-boot \
-            org/mybatis/spring/boot/mybatis-spring-boot-starter \
-            com/tngtech/archunit/archunit; do
-     printf '%s: ' "$a"
-     curl -sS --max-time 20 "https://repo1.maven.org/maven2/$a/maven-metadata.xml" \
-       | grep -oE '<version>[0-9]+\.[0-9]+\.[0-9]+</version>' | sed 's/<[^>]*>//g' | sort -V | tail -1
-   done
+   bash <スキルのパス>/templates/check-versions.sh
    ```
 
-2. 上表より新しい版があれば、次を確かめてから使い、使った版を利用者に伝える
-   - MyBatis Starter の POM（`.../mybatis-spring-boot-starter/<版>/mybatis-spring-boot-starter-<版>.pom` の親 POM）の `spring-boot.version` が、使う Spring Boot と同じメジャー・マイナー版であること。合わなければ、合う組み合わせのうち新しいものを使う
-   - Spock は上表の版のまま使う（Groovy の版に合わせる必要があるため）
-3. コマンドが失敗したとき（届かない・時間切れ）は、上表の版をそのまま使う。学習時の記憶にある版を使ってはならない
-4. Spring Batch、MySQL Connector/J、Groovy など、Spring Boot の BOM が管理する依存には版を書かない
+   次の版が `名前=版` の形で表示される。
+
+   | 表示名 | 決め方 |
+   |---|---|
+   | `spring-boot` | 最新正式版 |
+   | `spring-batch`、`groovy` | その Spring Boot の BOM が指定する版 |
+   | `mybatis-spring-boot-starter` | その Spring Boot と同じメジャー・マイナー版に対応するもののうち最新 |
+   | `spock-core` | その Groovy と同じメジャー・マイナー版に合うもののうち最新 |
+   | `archunit` | 最新正式版 |
+   | `gradle` | 最新正式版 |
+   | `java-lts` | 最新の LTS |
+
+2. 1つでも「割り出せなかった」と表示されたら（終了コード 1）、実装に進まず、どの版を使うかを開発者に質問する
+3. 使った版を開発者に伝える
+
+## 書き方
+
+- `build.gradle` に版を書くのは、Spring Boot のプラグイン、MyBatis Starter、Spock、ArchUnit だけとする
+- Spring Batch、Groovy、MySQL Connector/J など、Spring Boot の BOM が管理する依存には版を書かない
+- Java は Gradle の toolchain で、Gradle は Gradle Wrapper で指定する

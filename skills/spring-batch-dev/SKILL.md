@@ -53,4 +53,4 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 - Mapper はテーブル形の DTO を返す。domain のエンティティを resultMap に直接対応させない
 - 途中からの再開や DB による二重起動防止が求められたら、DB の JobRepository を設定する。既定のままでは記録がメモリにしか残らず、再開できない
 - API に迷ったら記憶で書かず、依存している jar を読んで確かめる（手順は `references/spring-batch-6-pitfalls.md`）
-- 版は [references/versions.md](references/versions.md) の表に従う。学習時の記憶にある版を使わない。Spring Boot の BOM が管理する依存には版を書かない
+- 版は [references/versions.md](references/versions.md) の手順で最新を割り出す。割り出せなければ開発者に質問する。学習時の記憶にある版を使わない。Spring Boot の BOM が管理する依存には版を書かない

@@ -7,7 +7,7 @@
 プロジェクトを新たに作るときは、業務のコードを書く前に置く。既存のプロジェクトに無ければ、変更の最初に置く。
 
 1. [../templates/ArchitectureSpec.groovy](../templates/ArchitectureSpec.groovy) を `src/test/groovy/<ルートパッケージのパス>/ArchitectureSpec.groovy` にコピーし、`__ROOT_PACKAGE__` をルートパッケージ名（`@SpringBootApplication` を付けたクラスのパッケージ）に置き換える
-2. `build.gradle` に `groovy` プラグインとテストの依存を加える（版は [versions.md](versions.md)。Spock と ArchUnit は BOM 管理外なので版を書く。Groovy は BOM に任せる）
+2. `build.gradle` に `groovy` プラグインとテストの依存を加える（版は [versions.md](versions.md) の手順で割り出す。Spock と ArchUnit は BOM 管理外なので版を書く。Groovy は BOM に任せる）
 
    ```groovy
    plugins {
