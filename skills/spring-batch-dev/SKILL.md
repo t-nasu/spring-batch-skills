@@ -14,7 +14,7 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 1. **仕様を受け取る。** 利用者からバッチ処理仕様書（書式は [references/batch-spec-template.md](references/batch-spec-template.md)）を受け取る。仕様書が無ければ、この書式を示して埋めてもらう。★ 項目の不足だけを、まとめて一度に質問する。
 2. **Batch か素の Boot かを決める。** [references/batch-vs-boot.md](references/batch-vs-boot.md) の条件に照らして決め、根拠（仕様のどの項目によるか）を一行で示す。迷ったら素の Spring Boot とする。
 3. **設計図と実装計画を書く。** [references/design-diagram.md](references/design-diagram.md) に従い、Mermaid の流れ図とステップ表を `docs/batch-specs/<ジョブ名>.design.md` に書く。[references/implementation-plan.md](references/implementation-plan.md) に従い、使う社内スキルと引数を含む実装計画を書く。両方を利用者に見せて承認を待つ。
-4. **実装する。** プロジェクトを新たに作る場合は、業務のコードより先に [references/architecture-spec.md](references/architecture-spec.md) に従って ArchitectureSpec を置く。後の「社内スキルとの関係」に従って社内スキルを使う。社内スキルで定まらない点の層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。Spring Batch を使う場合は、実装の前に [references/spring-batch-6-pitfalls.md](references/spring-batch-6-pitfalls.md) を読む。異常時の通知は [references/metrics.md](references/metrics.md) に従う。
+4. **実装する。** プロジェクトを新たに作る場合は、業務のコードより先に [references/architecture-spec.md](references/architecture-spec.md) に従って ArchitectureSpec を置く。後の「社内スキルとの関係」に従って社内スキルを使う。社内スキルで定まらない点の層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。Spring Batch を使う場合は、実装の前に [references/spring-batch-6-pitfalls.md](references/spring-batch-6-pitfalls.md) を読む。
 5. **確かめる。** ArchitectureSpec を含め `./gradlew build` が通ること、設計図とコードが食い違っていないことを確かめ、食い違いがあれば設計図かコードを直す。実装計画の「結果」を追記する。
 
 ## 変更の進め方
@@ -51,7 +51,6 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 - ユースケースのクラス名は `〇〇UseCase`。`〇〇Service` という名は付けない
 - MyBatis の SQL はすべて XML に書く。`@Select` などのアノテーション SQL は使わない
 - Mapper はテーブル形の DTO を返す。domain のエンティティを resultMap に直接対応させない
-- 異常時の通知は Prometheus のカウンタ（`batch.job.failures`, `batch.item.skips`）を増やして行う。メールなどの通知処理は作らない。カウンタを増やすのは batch 層だけ
 - 途中からの再開や DB による二重起動防止が求められたら、DB の JobRepository を設定する。既定のままでは記録がメモリにしか残らず、再開できない
 - API に迷ったら記憶で書かず、Gradle のキャッシュにある jar を読んで確かめる
 - 版は [references/versions.md](references/versions.md) の表に従う。学習時の記憶にある版を使わない。Spring Boot の BOM が管理する依存には版を書かない

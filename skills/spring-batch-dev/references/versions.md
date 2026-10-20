@@ -10,7 +10,6 @@
 | Spring Batch | 6.0.5 | Spring Boot の BOM に任せる（版を書かない） |
 | MySQL Connector/J | 9.7.0 | Spring Boot の BOM に任せる（版を書かない） |
 | MyBatis Spring Boot Starter | 4.1.0 | 明示する（BOM 管理外。Spring Boot 4.1 対応版） |
-| Micrometer（`micrometer-registry-prometheus`）・Prometheus Pushgateway 用（`prometheus-metrics-exporter-pushgateway`） | 1.17.1・1.7.0 | Spring Boot の BOM に任せる（版を書かない） |
 | ArchUnit（`archunit`） | 1.5.1 | 明示する（BOM 管理外） |
 | Spock（`spock-core`） | 2.5-groovy-5.0 | 明示する（BOM 管理外。Groovy 5 用） |
 | Groovy | 5.0.8 | Spring Boot の BOM に任せる（版を書かない） |
