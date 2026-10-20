@@ -64,16 +64,3 @@ t2（スキルあり）のコピーに、仕様書を直さず会話で「スキ
 - 更新したスキルで t2・t3 を作り直したところ、2本とも DB の JobRepository を設定し、照合は 19/19。自ら「途中で落ちたら続きから再開する」テストも書き、ビルドとテストが通った（toolchain を 21 に置き換えて確認）
 - この回から、エージェントへの条件を「Web 検索・Web 取得は不可、ローカルのコマンドはネットに届く」に改めた。2本とも決められた curl のコマンドで最新版を確かめた
 
-## 結合テストの決まりを加えた後（2026-10-20）
-
-`integration-test.md` を加えたスキルで t1・t3 を作り直した（Claude Code、スキルあり）。結合テストのコードは `eval/samples/integration-test/` に置いた。
-
-| 課題 | check.py | `./gradlew build` | `./gradlew integrationTest`（実の MySQL 8.4） |
-|---|---|---|---|
-| t1（素の Spring Boot） | 24/24 | 成功 | 8件すべて成功 |
-| t3（Spring Batch） | 23/23 | 成功 | 6件すべて成功 |
-
-- 両方とも `src/integrationTest` に置き、`build` には含めていなかった
-- `SpringApplication.run` に本番と同じ形の起動引数を渡して動かし、終了コードと DB の中身で検査していた
-- t3 は、再開と二重起動の防止のケースも実の MySQL 上の JobRepository で確かめていた
-- check.py の Gradle の版の定数を 9.8.2 に更新した（9.8.2 が出たため）

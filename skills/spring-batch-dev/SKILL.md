@@ -14,8 +14,8 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 1. **仕様を受け取る。** 利用者からバッチ処理仕様書（書式は [references/batch-spec-template.md](references/batch-spec-template.md)）を受け取る。仕様書が無ければ、この書式を示して埋めてもらう。★ 項目の不足だけを、まとめて一度に質問する。
 2. **Batch か素の Boot かを決める。** [references/batch-vs-boot.md](references/batch-vs-boot.md) の条件に照らして決め、根拠（仕様のどの項目によるか）を一行で示す。迷ったら素の Spring Boot とする。
 3. **設計図と実装計画を書く。** [references/design-diagram.md](references/design-diagram.md) に従い、Mermaid の流れ図とステップ表を `docs/batch-specs/<ジョブ名>.design.md` に書く。[references/implementation-plan.md](references/implementation-plan.md) に従い、使う社内スキルと引数を含む実装計画を書く。両方を利用者に見せて承認を待つ。
-4. **実装する。** プロジェクトを新たに作る場合は、業務のコードより先に [references/architecture-spec.md](references/architecture-spec.md) に従って ArchitectureSpec を置く。後の「社内スキルとの関係」に従って社内スキルを使う。社内スキルで定まらない点の層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。Spring Batch を使う場合は、実装の前に [references/spring-batch-6-pitfalls.md](references/spring-batch-6-pitfalls.md) を読む。単体テストとは別に、[references/integration-test.md](references/integration-test.md) に従って結合テストを書く。
-5. **確かめる。** ArchitectureSpec を含め `./gradlew build` が通ること、Docker が使えるなら `./gradlew integrationTest` も通ること（使えなければ、動かしていないと利用者に伝える）、設計図とコードが食い違っていないことを確かめ、食い違いがあれば設計図かコードを直す。実装計画の「結果」を追記する。
+4. **実装する。** プロジェクトを新たに作る場合は、業務のコードより先に [references/architecture-spec.md](references/architecture-spec.md) に従って ArchitectureSpec を置く。後の「社内スキルとの関係」に従って社内スキルを使う。社内スキルで定まらない点の層構成と命名は [references/architecture.md](references/architecture.md)、版は [references/versions.md](references/versions.md) に従う。Spring Batch を使う場合は、実装の前に [references/spring-batch-6-pitfalls.md](references/spring-batch-6-pitfalls.md) を読む。
+5. **確かめる。** ArchitectureSpec を含め `./gradlew build` が通ること、設計図とコードが食い違っていないことを確かめ、食い違いがあれば設計図かコードを直す。実装計画の「結果」を追記する。
 
 ## 変更の進め方
 
@@ -33,6 +33,7 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 使えるスキルのうち、名前が `add-` で始まるもの（部品を追加する手順）と `review-` で始まるもの（実装を点検する手順）を社内スキルとして扱う。社内スキルは増減するので、決まった名前を当てにせず、作業のたびに使えるスキルの一覧と説明文から、その作業に合うものを選ぶ。
 
 - 実装計画を書くとき、各手順に合う `add-` スキルを選び、手順の表に名前と引数を書く。合うものが無ければ「（なし）」と書き、本スキルの決まりで作る
+- 結合テストは、結合テストを追加する `add-` スキルで作る。本スキルでは結合テストの書き方を定めない
 - 実装の後、合う `review-` スキルをすべて使って点検する
 - 社内スキルの手順と決まりに従う。ただし次の点は、社内スキルと食い違っても本スキルに従う
   - バッチやスケジュールタスクの入口（起動処理）を追加する社内スキルは使わない。入口は本スキルの決まりで作る
@@ -49,7 +50,6 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 - `domain` は Spring・MyBatis・Spring Batch の型を import しない。public な setter を置かず、Lombok の `@Data` / `@Setter` も使わない
 - ArchitectureSpec のルールを消したり緩めたりしない
 - ユースケースのクラス名は `〇〇UseCase`。`〇〇Service` という名は付けない
-- 結合テストは `src/integrationTest` に置き、実の MySQL（と、AWS を使うなら LocalStack）のコンテナで、本番と同じ起動引数でアプリを動かして確かめる。`./gradlew build` には含めない
 - MyBatis の SQL はすべて XML に書く。`@Select` などのアノテーション SQL は使わない
 - Mapper はテーブル形の DTO を返す。domain のエンティティを resultMap に直接対応させない
 - 途中からの再開や DB による二重起動防止が求められたら、DB の JobRepository を設定する。既定のままでは記録がメモリにしか残らず、再開できない

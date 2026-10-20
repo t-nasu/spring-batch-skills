@@ -98,12 +98,6 @@ def check(project, expect, build):
         all_java = "\n".join(java_files.values())
         add("再開のため DB の JobRepository を設定している",
             bool(re.search(r"JdbcDefaultBatchConfiguration|@EnableJdbcJobRepository|JdbcJobRepositoryFactoryBean", all_java)))
-    it_files = read_all(project.glob("src/integrationTest/**/*.groovy"))
-    add("結合テストが src/integrationTest にある", bool(it_files))
-    add("結合テストの組（integrationTest）がある", bool(re.search(r"integrationTest\s*\(\s*JvmTestSuite", g)))
-    it_text = "\n".join(it_files.values())
-    add("結合テストで実の MySQL コンテナを使う", "MySQLContainer" in it_text)
-    add("結合テストを本番と同じ起動のしかたで動かす", "SpringApplication.run" in it_text and "@SpringBootTest" not in it_text)
     if expect == "boot":
         all_java = "\n".join(java_files.values())
         add("ApplicationRunner を使う", "ApplicationRunner" in all_java)
