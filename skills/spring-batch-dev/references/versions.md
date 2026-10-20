@@ -16,7 +16,20 @@
 
 ## エージェントへの指示
 
-1. インターネットに接続できる場合は、Maven Central の `maven-metadata.xml` で Spring Boot と MyBatis Spring Boot Starter の最新正式版を確かめ、上表より新しければそれを使い、その旨を利用者に伝える。MyBatis Starter は、使う Spring Boot の版に対応していることを POM の `spring-boot.version` で確認する。
-2. 接続できない場合は、上表の版をそのまま使う。学習時の記憶にある版を使ってはならない。
-3. BOM が管理する依存には版を書かない。
+1. プロジェクトを新たに作るときは、ローカルのコマンドで Maven Central の最新正式版を確かめる。Web 検索や Web ページの取得は使わず、次のコマンドだけを使う。
 
+   ```bash
+   for a in org/springframework/boot/spring-boot \
+            org/mybatis/spring/boot/mybatis-spring-boot-starter \
+            com/tngtech/archunit/archunit; do
+     printf '%s: ' "$a"
+     curl -sS --max-time 20 "https://repo1.maven.org/maven2/$a/maven-metadata.xml" \
+       | grep -oE '<version>[0-9]+\.[0-9]+\.[0-9]+</version>' | sed 's/<[^>]*>//g' | sort -V | tail -1
+   done
+   ```
+
+2. 上表より新しい版があれば、次を確かめてから使い、使った版を利用者に伝える
+   - MyBatis Starter の POM（`.../mybatis-spring-boot-starter/<版>/mybatis-spring-boot-starter-<版>.pom` の親 POM）の `spring-boot.version` が、使う Spring Boot と同じメジャー・マイナー版であること。合わなければ、合う組み合わせのうち新しいものを使う
+   - Spock は上表の版のまま使う（Groovy の版に合わせる必要があるため）
+3. コマンドが失敗したとき（届かない・時間切れ）は、上表の版をそのまま使う。学習時の記憶にある版を使ってはならない
+4. BOM が管理する依存には版を書かない
