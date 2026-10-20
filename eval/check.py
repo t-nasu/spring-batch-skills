@@ -14,6 +14,7 @@ BOOT_VERSION = "4.1.1"
 MYBATIS_STARTER_VERSION = "4.1.0"
 JAVA_VERSION = "25"
 ARCHUNIT_VERSION = "1.5.1"
+SPOCK_VERSION = "2.5-groovy-5.0"
 GRADLE_VERSION = "9.8.1"
 BOM_MANAGED = ["org.springframework.batch:spring-batch-core", "com.mysql:mysql-connector-j",
                "org.springframework.boot:spring-boot-starter"]
@@ -59,7 +60,7 @@ def check(project, expect, build):
     add("UseCase という名のクラスがある", bool(usecases))
     add("Service という名のクラスが無い（domain 以外）", not services, ", ".join(services))
 
-    add("ArchitectureSpec がある", any(project.glob("src/test/java/**/ArchitectureSpec.java")))
+    add("ArchitectureSpec がある", any(project.glob("src/test/groovy/**/ArchitectureSpec.groovy")))
 
     anno = [p.name for p, t in java_files.items() if re.search(r"@(Select|Insert|Update|Delete)\s*\(", t)]
     xmls = [p for p in project.glob("src/main/resources/**/*.xml") if "<mapper" in p.read_text(errors="replace")]
@@ -77,7 +78,8 @@ def check(project, expect, build):
                lambda m: f"JavaLanguageVersion.of({props.get(m.group(1), m.group(1))})", g)
     add(f"Spring Boot {BOOT_VERSION}", bool(re.search(rf"org\.springframework\.boot['\"]?\)?\s*version\s*\(?['\"]{re.escape(BOOT_VERSION)}", g)))
     add(f"MyBatis Starter {MYBATIS_STARTER_VERSION}", f"mybatis-spring-boot-starter:{MYBATIS_STARTER_VERSION}" in g)
-    add(f"ArchUnit {ARCHUNIT_VERSION}", f"archunit-junit5:{ARCHUNIT_VERSION}" in g)
+    add(f"Spock {SPOCK_VERSION}", f"spock-core:{SPOCK_VERSION}" in g)
+    add(f"ArchUnit {ARCHUNIT_VERSION}", f"com.tngtech.archunit:archunit:{ARCHUNIT_VERSION}" in g)
     add(f"Java {JAVA_VERSION} の toolchain",
         bool(re.search(rf"languageVersion\s*(=|\.set\()\s*JavaLanguageVersion\.of\(\s*{JAVA_VERSION}\s*\)", g)))
     pinned = [m for m in BOM_MANAGED if re.search(rf"{m}[\w-]*:\d", g)]

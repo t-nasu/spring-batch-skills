@@ -55,3 +55,4 @@ t2（スキルあり）のコピーに、仕様書を直さず会話で「スキ
 - 雛形を試験の3本（スキルあり）に当て、5つのルールすべてが通った
 - わざと違反を入れたコピー（domain に `@Data` と `@Component`、`@Setter`、application に `BadService` と infrastructure への参照）では、5つのルールすべてが失敗した
 - 更新したスキルで t3 を作り直したところ、業務のコードより先に雛形そのままの ArchitectureSpec が置かれ、実装計画（`docs/batch-specs/plans/`）も作られた。照合スクリプトは 17/17、ビルドとテストも通った（toolchain を 21 に置き換えて確認）
+- 2026-10-20 に Spock 版へ改めた。Spock 版（Spock 2.5-groovy-5.0、ArchUnit 1.5.1）でも、3本で5つのフィーチャーすべてが通り、違反を入れたコピーでは5つとも失敗した
