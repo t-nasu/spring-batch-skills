@@ -52,5 +52,5 @@ description: Java/Gradle でバッチ処理（Spring Batch または素の Sprin
 - MyBatis の SQL はすべて XML に書く。`@Select` などのアノテーション SQL は使わない
 - Mapper はテーブル形の DTO を返す。domain のエンティティを resultMap に直接対応させない
 - 途中からの再開や DB による二重起動防止が求められたら、DB の JobRepository を設定する。既定のままでは記録がメモリにしか残らず、再開できない
-- API に迷ったら記憶で書かず、Gradle のキャッシュにある jar を読んで確かめる
+- API に迷ったら記憶で書かず、依存している jar を読んで確かめる（手順は `references/spring-batch-6-pitfalls.md`）
 - 版は [references/versions.md](references/versions.md) の表に従う。学習時の記憶にある版を使わない。Spring Boot の BOM が管理する依存には版を書かない

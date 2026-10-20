@@ -1,0 +1,11 @@
+// 依存 jar の置き場所を表示する。Gradle のキャッシュの場所は環境で異なるため、Gradle 自身に答えさせる
+// 使い方: ./gradlew -q --init-script <このファイルのパス> printClasspathJars
+allprojects {
+    plugins.withId('java') {
+        tasks.register('printClasspathJars') {
+            def jars = project.configurations.named('compileClasspath')
+            inputs.files(jars)
+            doLast { inputs.files.files.each { println it } }
+        }
+    }
+}

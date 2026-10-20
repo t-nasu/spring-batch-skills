@@ -2,7 +2,10 @@
 
 Spring Batch 5 以前の知識と食い違い、しかもコンパイルエラーにならないものを挙げる。Spring Batch を使う場合は実装の前に読む。
 
-ここに無い API で迷ったら、記憶で書かず、Gradle のキャッシュ（`~/.gradle/caches/modules-2/files-2.1/`）にある jar や sources jar を読んで確かめる。
+ここに無い API で迷ったら、記憶で書かず、依存している jar を読んで確かめる。jar の置き場所は環境で異なるので、パスを決め打ちしない。
+
+1. このスキルの `templates/print-classpath-jars.gradle` を使って、jar の場所を表示する: `./gradlew -q --init-script <スキルのパス>/templates/print-classpath-jars.gradle printClasspathJars`
+2. 表示された jar の中身を JDK のツールで調べる: クラスの一覧は `jar tf <jar>`、メソッドの形は `javap -cp <jar> <完全修飾クラス名>`
 
 ## 途中からの再開には DB の JobRepository が要る
 
