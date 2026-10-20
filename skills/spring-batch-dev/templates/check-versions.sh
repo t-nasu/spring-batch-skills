@@ -4,7 +4,7 @@
 set -uo pipefail
 
 M=https://repo.maven.apache.org/maven2
-fetch() { curl -fsS --max-time 20 --retry 3 --retry-delay 5 "$1"; }
+fetch() { curl -fsS --max-time 20 --retry 5 --retry-delay 10 "$1"; }
 
 # 正式版（数字と点だけの版）のうち最新のもの
 latest() {
@@ -30,8 +30,12 @@ if [ -n "$boot" ]; then
   mybatis=""
   for v in $(fetch "$M/org/mybatis/spring/boot/mybatis-spring-boot-starter/maven-metadata.xml" \
                | grep -oE '<version>[0-9]+\.[0-9]+\.[0-9]+</version>' | sed 's/<[^>]*>//g' | sort -rV); do
-    sb=$(fetch "$M/org/mybatis/spring/boot/mybatis-spring-boot/$v/mybatis-spring-boot-$v.pom" | prop spring-boot.version)
-    if [ "$(echo "$sb" | cut -d. -f1,2)" = "$bootMinor" ]; then mybatis=$v; break; fi
+    # 取得に失敗したら、古い版を誤って選ばないよう打ち切る
+    pom=$(fetch "$M/org/mybatis/spring/boot/mybatis-spring-boot/$v/mybatis-spring-boot-$v.pom") || break
+    sbMinor=$(echo "$pom" | prop spring-boot.version | cut -d. -f1,2)
+    if [ "$sbMinor" = "$bootMinor" ]; then mybatis=$v; break; fi
+    # 新しい順に見ているので、対応する Spring Boot がより古くなったら打ち切る
+    [ "$(printf '%s\n' "$sbMinor" "$bootMinor" | sort -V | head -1)" = "$sbMinor" ] && break
   done
   show mybatis-spring-boot-starter "$mybatis"
 
@@ -42,6 +46,7 @@ fi
 
 show archunit "$(latest com/tngtech/archunit/archunit)"
 show gradle "$(fetch https://services.gradle.org/versions/current | grep -oE '"version" *: *"[^"]+"' | sed 's/.*"\([^"]*\)"$/\1/')"
+show foojay-resolver "$(fetch https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver-convention/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin/maven-metadata.xml | prop release)"
 show java-lts "$(fetch https://api.adoptium.net/v3/info/available_releases | grep -oE '"most_recent_lts" *: *[0-9]+' | grep -oE '[0-9]+$')"
 
 exit $failed

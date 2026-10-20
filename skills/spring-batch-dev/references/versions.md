@@ -20,6 +20,7 @@
    | `spock-core` | その Groovy と同じメジャー・マイナー版に合うもののうち最新 |
    | `archunit` | 最新正式版 |
    | `gradle` | 最新正式版 |
+   | `foojay-resolver` | 最新正式版（Gradle プラグイン `org.gradle.toolchains.foojay-resolver-convention`） |
    | `java-lts` | 最新の LTS |
 
 2. 1つでも「割り出せなかった」と表示されたら（終了コード 1）、実装に進まず、どの版を使うかを開発者に質問する
@@ -30,3 +31,4 @@
 - `build.gradle` に版を書くのは、Spring Boot のプラグイン、MyBatis Starter、Spock、ArchUnit だけとする
 - Spring Batch、Groovy、MySQL Connector/J など、Spring Boot の BOM が管理する依存には版を書かない
 - Java は Gradle の toolchain で、Gradle は Gradle Wrapper で指定する
+- 手元にその版の JDK が無くても Gradle が取得できるよう、`settings.gradle` の `plugins` に `id 'org.gradle.toolchains.foojay-resolver-convention' version '<版>'` を書く

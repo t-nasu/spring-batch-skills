@@ -32,6 +32,8 @@ class ArchitectureSpec extends Specification {
         given:
         def rule = layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()
+                // 作り始めでクラスの無い層があっても失敗させない
+                .withOptionalLayers(true)
                 .layer("batch").definedBy(BATCH)
                 .layer("application").definedBy(APPLICATION)
                 .layer("domain").definedBy(DOMAIN)
@@ -54,6 +56,7 @@ class ArchitectureSpec extends Specification {
                 .that().resideInAPackage(DOMAIN)
                 .should().dependOnClassesThat()
                 .resideInAnyPackage("org.springframework..", "org.apache.ibatis..", "org.mybatis..")
+                .allowEmptyShould(true)
 
         when:
         rule.check(classes)
@@ -67,6 +70,7 @@ class ArchitectureSpec extends Specification {
         def rule = noClasses()
                 .that().resideInAPackage(APPLICATION)
                 .should().haveSimpleNameEndingWith("Service")
+                .allowEmptyShould(true)
 
         when:
         rule.check(classes)
