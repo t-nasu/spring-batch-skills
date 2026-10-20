@@ -92,6 +92,12 @@ def check(project, expect, build):
     uses_batch = "spring-boot-starter-batch" in g
     add(f"判断が期待どおり（{expect}）", uses_batch == (expect == "batch"),
         "Spring Batch を使用" if uses_batch else "素の Spring Boot")
+    specs = "\n".join(p.read_text(encoding="utf-8", errors="replace")
+                      for p in project.glob("docs/batch-specs/*.md") if not p.name.endswith(".design.md"))
+    if uses_batch and re.search(r"失敗した所から再開したい|二重起動を防ぐ必要があるか: ある", specs):
+        all_java = "\n".join(java_files.values())
+        add("再開のため DB の JobRepository を設定している",
+            bool(re.search(r"JdbcDefaultBatchConfiguration|@EnableJdbcJobRepository|JdbcJobRepositoryFactoryBean", all_java)))
     if expect == "boot":
         all_java = "\n".join(java_files.values())
         add("ApplicationRunner を使う", "ApplicationRunner" in all_java)
